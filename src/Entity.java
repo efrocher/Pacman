@@ -1,20 +1,25 @@
 public abstract class Entity {
 
     // Attributs
-    protected float xPos;
-    protected float yPos;
+    private float position[] = new float[2];
 
     // GetSet
-    public float getxPos() {
-        return xPos;
+    public float[] getPosition() {
+        return position;
     }
-    public float getyPos() {
-        return yPos;
+    public void setPositionX(float x){
+        position[0] = x;
+    }
+    public void setPositionY(float y){
+        position[1] = y;
     }
 
     // Constructeurs
+    public Entity (float xPos, float yPos){
 
-    // Méthodes
-    public abstract void Behave();
+        position[0] = xPos;
+        position[1] = yPos;
+
+    }
 
 }
