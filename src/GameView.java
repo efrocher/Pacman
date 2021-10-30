@@ -52,6 +52,15 @@ public class GameView extends JComponent {
     }
     private void drawEntities(Graphics g){
 
+        // Ghosts
+        g.setColor(Color.GREEN);
+        for(Ghost ghost : space.getGhosts())
+            g.fillOval(
+                    (int) (ghost.getPosition()[0] - GameSpace.TILE_SIZE_HALF + (GameSpace.TILE_SIZE / 5)) * SCALE,
+                    (int) (ghost.getPosition()[1] - GameSpace.TILE_SIZE_HALF + (GameSpace.TILE_SIZE / 5)) * SCALE,
+                    GameSpace.TILE_SIZE * 3/5 * SCALE,
+                    GameSpace.TILE_SIZE * 3/5 * SCALE);
+
         // Pacman
         g.setColor(Color.YELLOW);
         g.fillOval(

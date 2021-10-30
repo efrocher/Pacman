@@ -1,5 +1,3 @@
-import java.util.Random;
-
 public class Pacman extends BehavingEntity {
 
     // Constantes
@@ -20,8 +18,15 @@ public class Pacman extends BehavingEntity {
     }
     @Override
     protected Direction tryToChoseNewDirection() {
-        Random rng = new Random();
-        return Direction.values()[rng.nextInt(4)];
+        if(InputManager.isUpPressed())
+            return Direction.UP;
+        else if(InputManager.isDownPressed())
+            return Direction.DOWN;
+        else if(InputManager.isLeftPressed())
+            return Direction.LEFT;
+        else if(InputManager.isRightPressed())
+            return Direction.RIGHT;
+        else return direction;
     }
 
 }

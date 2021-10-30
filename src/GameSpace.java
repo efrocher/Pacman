@@ -1,10 +1,12 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class GameSpace {
 
     // Constantes
     public static final int TILE_AMOUNT_H = 15;
-    public static final int TILE_AMOUNT_V = 15;
+    public static final int TILE_AMOUNT_V = 17;
     public static final int TILE_SIZE = 25; // px, impair
     public static final int TILE_SIZE_HALF = (int)Math.ceil(TILE_SIZE / 2f) - 1; //px
     public static final int WIDTH = TILE_AMOUNT_H * TILE_SIZE; // px
@@ -13,10 +15,10 @@ public class GameSpace {
     public static final int[] LABYRINTH_DIMENTION = {TILE_AMOUNT_H, TILE_AMOUNT_V};
 
     // Attributs
-    private Random rng;
+    private final Random rng;
     private Pacman pacman;
-    private Ghost[] ghosts;
-    private Gum[] gums;
+    private final List<Ghost> ghosts = new ArrayList<Ghost>();
+    private final List<Gum> gums = new ArrayList<Gum>();
     private boolean[][] labyrinth; // True = passage possible | False = passage impossible
 
     // GetSet
@@ -26,6 +28,9 @@ public class GameSpace {
     public Pacman getPacman() {
         return pacman;
     }
+    public List<Ghost> getGhosts() {
+        return ghosts;
+    }
 
     // Constructeurs
     public GameSpace(Random rng){
@@ -33,6 +38,7 @@ public class GameSpace {
 
         labyrinth = staticLabyrinth();
         createAndRandomlyPlacePacman();
+        createAndRandomlyPlaceGhosts();
     }
 
     // Méthodes
@@ -44,6 +50,18 @@ public class GameSpace {
             tileCoord[1] = rng.nextInt(HEIGHT / TILE_SIZE);
         } while(!tileCrossable(tileCoord));
         pacman = new Pacman((tileCoord[0] * TILE_SIZE) + TILE_SIZE_HALF, (tileCoord[1] * TILE_SIZE) + TILE_SIZE_HALF, this, BehavingEntity.Direction.RIGHT);
+
+    }
+    private void createAndRandomlyPlaceGhosts(){
+
+        int[] tileCoord = new int[2];
+        for(int i = 0; i < 4; i++){
+            do{
+                tileCoord[0] = rng.nextInt(WIDTH / TILE_SIZE);
+                tileCoord[1] = rng.nextInt(HEIGHT / TILE_SIZE);
+            } while(!tileCrossable(tileCoord));
+            ghosts.add(new Ghost((tileCoord[0] * TILE_SIZE) + TILE_SIZE_HALF, (tileCoord[1] * TILE_SIZE) + TILE_SIZE_HALF, this, BehavingEntity.Direction.RIGHT));
+        }
 
     }
     public boolean tileCrossable(int[] tileCoord){
@@ -75,12 +93,6 @@ public class GameSpace {
     }
     public static float[] tileCoordToPosition(int[] tileCoord){
         return new float[] {(tileCoord[0] * TILE_SIZE) + TILE_SIZE_HALF, (tileCoord[1] * TILE_SIZE) + TILE_SIZE_HALF};
-    }
-    public static void wrapTileCoord(int[] tileCoord, int axis){
-        if(tileCoord[axis] < 0)
-            tileCoord[axis] += LABYRINTH_DIMENTION[axis];
-        else if(tileCoord[axis] >= LABYRINTH_DIMENTION[axis])
-            tileCoord[axis] -= LABYRINTH_DIMENTION[axis];
     }
     public static void wrapPosition(float[] position, int axis){
         if (position[axis] < 0)

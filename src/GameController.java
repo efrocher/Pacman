@@ -7,6 +7,7 @@ public class GameController {
     // Attributs
     private GameSpace space;
     private GameView view;
+    private int score;
 
     // GetSet
 
@@ -14,6 +15,7 @@ public class GameController {
     public GameController(GameSpace gameSpace, GameView view){
         this.space = gameSpace;
         this.view = view;
+        score = 0;
     }
 
     // Méthodes
@@ -25,10 +27,15 @@ public class GameController {
 
             // Comportement des entités
             space.getPacman().behave();
+            for(Ghost g : space.getGhosts())
+                g.behave();
 
             // Delay
             Thread.sleep(TARGET_FRAME_TIME);
         }
+    }
+    public void addPoints(int points){
+        score += points;
     }
 
 }

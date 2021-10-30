@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.util.Random;
 
+import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
+
 public class App {
 
     private static final int FRAME_DEFAULT_POSITION_X = 200;
@@ -20,6 +22,7 @@ public class App {
         // Création de la fenêtre
         JFrame frame = new JFrame("Pacman");
         frame.add(view);
+        frame.addKeyListener(new InputManager());
         frame.getContentPane().setPreferredSize(view.getSize());
         frame.pack();
         frame.setResizable(false);

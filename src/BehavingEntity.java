@@ -33,7 +33,7 @@ public abstract class BehavingEntity extends Entity {
     public BehavingEntity(float xPos, float yPos, GameSpace space, Direction direction, float speed) {
         super(xPos, yPos);
         this.space = space;
-        this.direction = direction;
+        setDirection(direction);
         this.speed = speed;
         findNextCrossroad();
     }
@@ -44,12 +44,10 @@ public abstract class BehavingEntity extends Entity {
     protected void move(){
 
         // Var
-        float[] newPosition = getPosition();
+        float[] newPosition = Arrays.copyOf(getPosition(), 2);
 
         // Mouvement
         newPosition[axis] += speed * directionInAxis * GameController.DELTA;
-
-        // Wraparound
         GameSpace.wrapPosition(newPosition, axis);
 
         // Changement de direction
@@ -71,11 +69,11 @@ public abstract class BehavingEntity extends Entity {
                 newDirectionInAxis = 1;
 
             // Calcul de la prochaine case qui serait rencontrée
-            hypotheticalTileCoord[newAxis] += newDirectionInAxis;
-            GameSpace.wrapTileCoord(hypotheticalTileCoord, newAxis);
-
+            hypotheticalTileCoord[newAxis] = Math.floorMod(hypotheticalTileCoord[newAxis] + newDirectionInAxis, GameSpace.LABYRINTH_DIMENTION[newAxis]);
+            if(hypotheticalTileCoord[newAxis] == -1)
+                System.out.println(newDirectionInAxis + ", " + "GameSpace.LABYRINTH_DIMENTION[newAxis]");
             // Result
-            if(axis != newAxis && space.tileCrossable(hypotheticalTileCoord))
+            if(newDirection != direction && space.tileCrossable(hypotheticalTileCoord))
             {
                 newPosition[axis] = nextCrossroad;
                 setPositionX(newPosition[0]);
@@ -97,8 +95,7 @@ public abstract class BehavingEntity extends Entity {
             }
             else if((newPosition[axis] % GameSpace.TILE_SIZE) * directionInAxis > GameSpace.TILE_SIZE_HALF * directionInAxis)
             {
-                tileCoord[axis] += directionInAxis;
-                GameSpace.wrapTileCoord(tileCoord, axis);
+                tileCoord[axis] = Math.floorMod(tileCoord[axis] + directionInAxis, GameSpace.LABYRINTH_DIMENTION[axis]);
                 if(!space.tileCrossable(tileCoord))
                     pathIsClear = false;
             }
@@ -107,12 +104,10 @@ public abstract class BehavingEntity extends Entity {
             if(!pathIsClear){
 
                 // Recherche d'une tile vide en arrière
-                tileCoord[axis] -= directionInAxis;
-                GameSpace.wrapTileCoord(tileCoord, axis);
-                while(!space.tileCrossable(tileCoord)){
-                    tileCoord[axis] -= directionInAxis;
-                    GameSpace.wrapTileCoord(tileCoord, axis);
-                }
+                tileCoord[axis] = Math.floorMod(tileCoord[axis] - directionInAxis, GameSpace.LABYRINTH_DIMENTION[axis]);
+                while(!space.tileCrossable(tileCoord))
+                    tileCoord[axis] = Math.floorMod(tileCoord[axis] - directionInAxis, GameSpace.LABYRINTH_DIMENTION[axis]);
+
 
                 // Positionnement
                 newPosition = GameSpace.tileCoordToPosition(tileCoord);
@@ -147,6 +142,9 @@ public abstract class BehavingEntity extends Entity {
         crossRoadposition[axis] = positionInAxis;
         if(space.tileCrossable(GameSpace.positionToTileCoord(crossRoadposition)))
             nextCrossroad = positionInAxis;
+        else
+            nextCrossroad = getPosition()[axis];
+
     }
 
     // Méthodes statiques

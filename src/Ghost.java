@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class Ghost extends BehavingEntity {
 
     // Constantes
@@ -14,10 +16,11 @@ public class Ghost extends BehavingEntity {
 
     // Méthodes
     public void behave() {
-
+        move();
     }
     @Override
     protected Direction tryToChoseNewDirection() {
-        return Direction.UP;
+        Random rng = new Random();
+        return Direction.values()[rng.nextInt(4)];
     }
 }
