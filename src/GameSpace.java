@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,6 +16,7 @@ public class GameSpace {
     public static final int[] LABYRINTH_DIMENTION = {TILE_AMOUNT_H, TILE_AMOUNT_V};
 
     // Attributs
+    private final InputManager inputManager;
     private final Random rng;
     private Pacman pacman;
     private final List<Ghost> ghosts = new ArrayList<Ghost>();
@@ -31,14 +33,37 @@ public class GameSpace {
     public List<Ghost> getGhosts() {
         return ghosts;
     }
+    public List<Gum> getGums() {
+        return gums;
+    }
 
     // Constructeurs
-    public GameSpace(Random rng){
-        this.rng = rng;
+    public GameSpace(Random rng, InputManager inputManager){
 
+        this.rng = rng;
+        this.inputManager = inputManager;
+
+        // Création du labyrinth
         labyrinth = staticLabyrinth();
-        createAndRandomlyPlacePacman();
-        createAndRandomlyPlaceGhosts();
+        // Pacaman
+        pacman = new Pacman((7 * TILE_SIZE) + TILE_SIZE_HALF, (14 * TILE_SIZE) + TILE_SIZE_HALF, this, BehavingEntity.Direction.RIGHT);
+        // Fantômes
+        for(int i = 0; i < 4; i++)
+            ghosts.add(new Ghost((7 * TILE_SIZE) + TILE_SIZE_HALF, ((i + 6) * TILE_SIZE) + TILE_SIZE_HALF, this, BehavingEntity.Direction.UP, rng));
+        // Gommes
+        for(int x = 0; x < TILE_AMOUNT_H; x++)
+            for(int y = 0; y < TILE_AMOUNT_V; y++)
+                if(labyrinth[x][y]){
+                    if((x == 1 && y == 1) || (x == 13 && y == 15))
+                        gums.add(new SneakyGum((x * TILE_SIZE) + TILE_SIZE_HALF, (y * TILE_SIZE) + TILE_SIZE_HALF));
+                    else if((x == 13 && y == 1) || (x == 1 && y == 15))
+                        gums.add(new SuperGum((x * TILE_SIZE) + TILE_SIZE_HALF, (y * TILE_SIZE) + TILE_SIZE_HALF));
+                    else if(x == 7 && y == 9)
+                        gums.add(new MazeGum((x * TILE_SIZE) + TILE_SIZE_HALF, (y * TILE_SIZE) + TILE_SIZE_HALF));
+                    else
+                        gums.add(new NormalGum((x * TILE_SIZE) + TILE_SIZE_HALF, (y * TILE_SIZE) + TILE_SIZE_HALF));
+                }
+
     }
 
     // Méthodes
@@ -60,7 +85,7 @@ public class GameSpace {
                 tileCoord[0] = rng.nextInt(WIDTH / TILE_SIZE);
                 tileCoord[1] = rng.nextInt(HEIGHT / TILE_SIZE);
             } while(!tileCrossable(tileCoord));
-            ghosts.add(new Ghost((tileCoord[0] * TILE_SIZE) + TILE_SIZE_HALF, (tileCoord[1] * TILE_SIZE) + TILE_SIZE_HALF, this, BehavingEntity.Direction.RIGHT));
+            ghosts.add(new Ghost((tileCoord[0] * TILE_SIZE) + TILE_SIZE_HALF, (tileCoord[1] * TILE_SIZE) + TILE_SIZE_HALF, this, BehavingEntity.Direction.RIGHT, rng));
         }
 
     }
@@ -70,6 +95,36 @@ public class GameSpace {
 
     // Méthodes statiques
     private static boolean[][] staticLabyrinth(){
+
+        // Rempli de la mauvaise manière, à fixer
+        boolean[][] brokenLab = new boolean[][]{
+                {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false},
+                {false, true, true, true, true, true, true, false, true, true, true, true, true, true, false},
+                {false, true, false, false, true, false, true, false, true, false, true, false, false, true, false},
+                {false, true, false, false, true, false, true, true, true, false, true, false, false, true, false},
+                {false, true, true, false, true, false, false, false, false, false, true, false, true, true, false},
+                {false, false, true, false, true, true, true, true, true, true, true, false, true, false, false},
+                {false, false, true, false, false, true, false, true, false, true, false, false, true, false, false},
+                {true, true, true, false, false, true, false, true, false, true, false, false, true, true, true},
+                {false, false, true, false, false, true, false, true, false, true, false, false, true, false, false},
+                {false, false, true, false, false, true, false, true, false, true, false, false, true, false, false},
+                {false, true, true, true, false, true, false, false, false, true, false, true, true, true, false},
+                {false, true, false, true, true, true, true, true, true, true, true, true, false, true, false},
+                {false, true, false, false, false, true, false, true, false, true, false, false, false, true, false},
+                {false, true, true, true, false, true, false, true, false, true, false, true, true, true, false},
+                {false, true, false, true, false, true, true, true, true, true, false, true, false, true, false},
+                {false, true, true, true, true, true, false, false, false, true, true, true, true, true, false},
+                {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false}};
+
+        boolean[][] fixedLab = new boolean[15][17];
+        for(int x = 0; x < 15; x++)
+            for(int y = 0; y < 17; y++)
+                fixedLab[x][y] = brokenLab[y][x];
+
+        return fixedLab;
+
+    }
+    private static boolean[][] staticProcLabyrinth(){
 
         boolean[][] lab = new boolean[TILE_AMOUNT_H][TILE_AMOUNT_V];
 

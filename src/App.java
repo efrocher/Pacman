@@ -11,18 +11,19 @@ public class App {
     // Ne touchez pas à ce code
     public static void main(String[] args) throws InterruptedException {
 
-        // Rng
+        // Utilitaires
         Random rng = new Random();
+        InputManager inputManager = new InputManager();
 
-        // Création des éléments
-        GameSpace space = new GameSpace(rng);
+        // Création des éléments du jeu
+        GameSpace space = new GameSpace(rng, inputManager);
         GameView view = new GameView(space);
         GameController controller = new GameController(space, view);
 
         // Création de la fenêtre
         JFrame frame = new JFrame("Pacman");
         frame.add(view);
-        frame.addKeyListener(new InputManager());
+        frame.addKeyListener(inputManager);
         frame.getContentPane().setPreferredSize(view.getSize());
         frame.pack();
         frame.setResizable(false);

@@ -52,6 +52,24 @@ public class GameView extends JComponent {
     }
     private void drawEntities(Graphics g){
 
+        // Gums
+        g.setColor(Color.WHITE);
+        for(Gum gum : space.getGums()){
+            if(gum instanceof NormalGum)
+                g.setColor(Color.WHITE);
+            else if(gum instanceof SneakyGum)
+                g.setColor(Color.MAGENTA);
+            else if(gum instanceof SuperGum)
+                g.setColor(Color.ORANGE);
+            else
+                g.setColor(Color.GREEN);
+            g.fillOval(
+                    (int) (gum.getPosition()[0] - GameSpace.TILE_SIZE_HALF + (GameSpace.TILE_SIZE / 2.5)) * SCALE,
+                    (int) (gum.getPosition()[1] - GameSpace.TILE_SIZE_HALF + (GameSpace.TILE_SIZE / 2.5)) * SCALE,
+                    GameSpace.TILE_SIZE * 1/5 * SCALE,
+                    GameSpace.TILE_SIZE * 1/5 * SCALE);
+        }
+
         // Ghosts
         g.setColor(Color.GREEN);
         for(Ghost ghost : space.getGhosts())
