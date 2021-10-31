@@ -4,6 +4,7 @@ public class Ghost extends Entity {
 
     // Constantes
     private static final float BASE_SPEED = 80f; // px / seconde
+    private static final int HIT_RADIUS = 6; // px
 
     // Attributs
     private Random rng;
@@ -12,7 +13,7 @@ public class Ghost extends Entity {
 
     // Constructeurs
     public Ghost(float xPos, float yPos, GameSpace space, Direction direction, Random rng) {
-        super(xPos, yPos, space, direction, BASE_SPEED);
+        super(xPos, yPos, space, direction, BASE_SPEED, HIT_RADIUS);
         this.rng = rng;
     }
 
@@ -35,6 +36,10 @@ public class Ghost extends Entity {
     protected boolean onCrossroad() {
         super.onCrossroad();
         return true;
+    }
+    @Override
+    protected void onEntityCollision(Entity otherEntity) {
+
     }
     @Override
     public void notifyNewInput(Direction input) {

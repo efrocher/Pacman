@@ -10,10 +10,11 @@ public abstract class Entity {
     // Attributs
     protected GameSpace space;
     private final float position[] = new float[2];
+    private final float speed;
+    private final int hitRadius;
     protected Direction direction;
     protected int axis;
     protected int directionInAxis;
-    private float speed;
     protected float[] nextCrossroad;
 
     // GetSet
@@ -39,15 +40,13 @@ public abstract class Entity {
     }
 
     // Constructeurs
-    public Entity(float xPos, float yPos, GameSpace space, Direction direction, float speed) {
-        position[0] = xPos;
-        position[1] = yPos;
+    public Entity(float xPos, float yPos, GameSpace space, Direction direction, float speed, int hitRadius) {
+
         this.space = space;
-        setDirection(direction);
         this.speed = speed;
-        nextCrossroad = Entity.findNextCrossroad(getPosition(), direction);
-        if(!space.tileCrossable(GameSpace.positionToTileCoord(nextCrossroad)))
-            nextCrossroad = GameSpace.tileCoordToPosition(GameSpace.positionToTileCoord(getPosition()));
+        this.hitRadius = hitRadius;
+        relocate(new float[] {xPos, yPos}, direction);
+
     }
 
     // Méthodes
@@ -79,7 +78,15 @@ public abstract class Entity {
         space.cross(this, GameSpace.positionToTileCoord(nextCrossroad));
         return true;
     }
+    protected abstract void onEntityCollision(Entity otherEntity);
     public abstract void notifyNewInput(Direction input);
+    public void relocate(float[] newPosition, Direction direction){
+        position[0] = newPosition[0];
+        position[1] = newPosition[1];
+        setDirection(direction);
+        nextCrossroad = GameSpace.tileCoordToPosition(GameSpace.positionToTileCoord(getPosition()));
+        InputManager.clearLastInput();
+    }
 
     // Méthodes statiques
     protected static float[] findNextCrossroad(float[] position, Direction direction){
@@ -116,5 +123,11 @@ public abstract class Entity {
         crossRoadposition[axis] = positionInAxis;
         return crossRoadposition;
 
+    }
+    public static void checkCollision(Entity entity1, Entity entity2){
+        if(entity1.hitRadius + entity2.hitRadius > Math.sqrt(Math.pow(entity1.position[0] - entity2.position[0], 2) + Math.pow(entity1.position[1] - entity2.position[1], 2))){
+            entity1.onEntityCollision(entity2);
+            entity2.onEntityCollision(entity1);
+        }
     }
 }

@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameController {
 
     // Constantes
@@ -21,19 +24,34 @@ public class GameController {
     public void run() throws InterruptedException {
 
         timeStamp = System.nanoTime() / 1e6;
-        while(true){
+        while(space.getGumAmount() > 0 && space.getPacman().getLives() > 0){
 
             // Refresh frame
             view.repaint();
 
-            // Comportement des entités
+            // Logique
             while(System.nanoTime() / 1e6 > timeStamp + TARGET_TICK_TIME){
-                space.getPacman().behave();
-                for(Ghost g : space.getGhosts())
-                    g.behave();
-                timeStamp += TARGET_TICK_TIME;
-            }
 
+                // Récupération des entitées
+                List<Entity> entities = new ArrayList<Entity>();
+                entities.add((space.getPacman()));
+                for(Entity e : space.getGhosts())
+                    entities.add(e);
+
+                // Comportement régulier des entités
+                for(Entity e : entities)
+                    e.behave();
+
+                // Collision des entités
+                int nbEntities = entities.size();
+                for(int i = 0; i < nbEntities; i++)
+                    for(int j = i + 1; j < nbEntities; j++)
+                        Entity.checkCollision(entities.get(i), entities.get(j));
+
+                // Avancement du timeStamp
+                timeStamp += TARGET_TICK_TIME;
+
+            }
         }
     }
 

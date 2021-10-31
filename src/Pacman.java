@@ -2,15 +2,21 @@ public class Pacman extends Entity {
 
     // Constantes
     private static final float BASE_SPEED = 80f; // px / seconde
+    private static final int HIT_RADIUS = 6; // px
 
     // Attributs
+    private int lives;
 
     // GetSet
+    public int getLives() {
+        return lives;
+    }
 
     // Constructeurs
-    public Pacman(int xPos, int yPos, GameSpace space, Direction direction){
-        super(xPos, yPos, space, direction, BASE_SPEED);
+    public Pacman(float xPos, float yPos, GameSpace space, Direction direction){
+        super(xPos, yPos, space, direction, BASE_SPEED, HIT_RADIUS);
         InputManager.subscribe(this);
+        lives = 3;
     }
 
     // Méthodes
@@ -39,6 +45,13 @@ public class Pacman extends Entity {
         return true;
     }
     @Override
+    protected void onEntityCollision(Entity otherEntity) {
+        if(otherEntity instanceof Ghost){
+            lives--;
+            relocate(GameSpace.tileCoordToPosition(GameSpace.SPAWN_PACMAN), Direction.DOWN);
+        }
+    }
+    @Override
     public void notifyNewInput(Direction newDirection) {
         if(newDirection != null && newDirection.ordinal() == (direction.ordinal() + 2) % 4){
             float[] newCrossroad = findNextCrossroad(getPosition(), newDirection);
@@ -48,5 +61,8 @@ public class Pacman extends Entity {
                 InputManager.clearLastInput();
             }
         }
+    }
+    public void addLife(int lives){
+        this.lives += lives;
     }
 }
