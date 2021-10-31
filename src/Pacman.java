@@ -1,7 +1,7 @@
 public class Pacman extends Entity {
 
     // Constantes
-    private static final float BASE_SPEED = 50f; // px / seconde
+    private static final float BASE_SPEED = 80f; // px / seconde
 
     // Attributs
 
@@ -23,6 +23,7 @@ public class Pacman extends Entity {
     }
     @Override
     protected boolean onCrossroad() {
+        super.onCrossroad();
         Direction newDirection = InputManager.getLastInput();
         if(newDirection != null && newDirection != direction && ((System.nanoTime() - InputManager.getLastInputTimestamp()) / 1e6) < 500){
             float[] newCrossroad = findNextCrossroad(nextCrossroad, newDirection);

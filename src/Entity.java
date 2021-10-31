@@ -75,7 +75,10 @@ public abstract class Entity {
         }
     }
     protected abstract void onRoadBlock();
-    protected abstract boolean onCrossroad();
+    protected boolean onCrossroad(){
+        space.cross(this, GameSpace.positionToTileCoord(nextCrossroad));
+        return true;
+    }
     public abstract void notifyNewInput(Direction input);
 
     // Méthodes statiques

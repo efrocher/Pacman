@@ -57,10 +57,12 @@ public class GameView extends JComponent {
         g.setColor(COLOR_WALL);
 
         for(int x = 0; x < GameSpace.TILE_AMOUNT_H; x++ )
-            for(int y = 0; y < GameSpace.TILE_AMOUNT_V; y++ )
-                if(space.getGrid()[x][y] != null && space.getGrid()[x][y] instanceof Wall){
+            for(int y = 0; y < GameSpace.TILE_AMOUNT_V; y++ ){
+                GridElement element = space.getElementAt(new int[] {x, y});
+                if(element != null && (element instanceof Wall || (element instanceof Gate && !element.isCrosseable()))){
                     g.fillRect(x * GameSpace.TILE_SIZE * SCALE, y * GameSpace.TILE_SIZE * SCALE, GameSpace.TILE_SIZE * SCALE, GameSpace.TILE_SIZE * SCALE);
                 }
+            }
 
     }
     private void drawNonWallElements(Graphics g) {
@@ -68,16 +70,16 @@ public class GameView extends JComponent {
         for(int x = 0; x < GameSpace.TILE_AMOUNT_H; x++ )
             for(int y = 0; y < GameSpace.TILE_AMOUNT_V; y++ ){
 
-                GridElement element = space.getGrid()[x][y];
+                GridElement element = space.getElementAt(new int[] {x, y});
                 if(element != null && !(element instanceof Wall)){
-                    if(element instanceof NormalGum || element instanceof MazeGum || element instanceof SuperGum || element instanceof SneakyGum)
-                        drawGum(g, element, x, y);
+                    if(element instanceof Gum)
+                        drawGum(g, (Gum)element, x, y);
                 }
 
             }
 
     }
-    private void drawGum(Graphics g, GridElement gum, int x, int y){
+    private void drawGum(Graphics g, Gum gum, int x, int y) {
 
         // Choix couleur
         if(gum instanceof NormalGum)
@@ -97,7 +99,7 @@ public class GameView extends JComponent {
                 GameSpace.TILE_SIZE / 5 * SCALE);
 
     }
-    private void drawEntities(Graphics g){
+    private void drawEntities(Graphics g) {
 
         // Ghosts
         g.setColor(COLOR_GHOST_NORMAL);
