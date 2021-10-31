@@ -1,22 +1,22 @@
-public class MazeGum extends GridElement{
+public class MazeGum extends Gum{
+
+    // Constantes
+    private final static int SCORE_BONUS = 1000;
 
     // Attributs
 
     // GetSet
 
     // Constructeurs
-    public MazeGum() {
-        super();
+    public MazeGum(int[] tileCoord, GameSpace space) {
+        super(tileCoord, space, SCORE_BONUS);
     }
 
     // Méthodes
     @Override
-    public void onCrossed(Entity crossingEntity) {
-
-    }
-    @Override
-    public boolean isCrosseable() {
-        return true;
+    protected void releaseBonus() {
+        super.releaseBonus();
+        space.swapGates();
     }
 
 }

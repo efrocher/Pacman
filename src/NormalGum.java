@@ -1,22 +1,21 @@
-public class NormalGum extends GridElement{
+public class NormalGum extends Gum{
+
+    // Constantes
+    private final static int SCORE_BONUS = 100;
 
     // Attributs
 
     // GetSet
 
     // Constructeurs
-    public NormalGum() {
-        super();
+    public NormalGum(int[] tileCoord, GameSpace space) {
+        super(tileCoord, space, SCORE_BONUS);
     }
 
     // Méthodes
     @Override
-    public void onCrossed(Entity crossingEntity) {
-
-    }
-    @Override
-    public boolean isCrosseable() {
-        return true;
+    protected void releaseBonus() {
+        super.releaseBonus();
     }
 
 }

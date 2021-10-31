@@ -1,13 +1,13 @@
 public class GameController {
 
     // Constantes
-    public final static int TARGET_FRAME_TIME = 20; // ms
-    public final static float DELTA = 1f / TARGET_FRAME_TIME;
+    public static final int TARGET_TICK_TIME = 20; // ms
+    public static final float DELTA = TARGET_TICK_TIME / 1000f;
 
     // Attributs
     private GameSpace space;
     private GameView view;
-    private int score;
+    private double timeStamp;
 
     // GetSet
 
@@ -15,27 +15,26 @@ public class GameController {
     public GameController(GameSpace gameSpace, GameView view){
         this.space = gameSpace;
         this.view = view;
-        score = 0;
     }
 
     // Méthodes
     public void run() throws InterruptedException {
+
+        timeStamp = System.nanoTime() / 1e6;
         while(true){
 
             // Refresh frame
             view.repaint();
 
             // Comportement des entités
-            space.getPacman().behave();
-            for(Ghost g : space.getGhosts())
-                g.behave();
+            while(System.nanoTime() / 1e6 > timeStamp + TARGET_TICK_TIME){
+                space.getPacman().behave();
+                for(Ghost g : space.getGhosts())
+                    g.behave();
+                timeStamp += TARGET_TICK_TIME;
+            }
 
-            // Delay
-            Thread.sleep(TARGET_FRAME_TIME);
         }
-    }
-    public void addPoints(int points){
-        score += points;
     }
 
 }

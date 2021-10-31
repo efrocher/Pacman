@@ -15,15 +15,17 @@ public class GameSpace {
     public static final int[] LABYRINTH_DIMENTION = {TILE_AMOUNT_H, TILE_AMOUNT_V};
 
     // Attributs
-    private final InputManager inputManager;
     private final Random rng;
     private Pacman pacman;
     private final List<Ghost> ghosts = new ArrayList<Ghost>();
     private final GridElement[][] grid = new GridElement[TILE_AMOUNT_H][TILE_AMOUNT_V]; // True = passage possible | False = passage impossible
+    private final List<Gate> gates = new ArrayList<Gate>();
+    private int gumAmount;
+    private int score;
 
     // GetSet
-    public GridElement[][] getGrid() {
-        return grid;
+    public GridElement getElementAt(int[] tileCoord){
+        return grid[tileCoord[0]][tileCoord[1]];
     }
     public Pacman getPacman() {
         return pacman;
@@ -33,19 +35,76 @@ public class GameSpace {
     }
 
     // Constructeurs
-    public GameSpace(Random rng, InputManager inputManager){
+    public GameSpace(Random rng){
 
         this.rng = rng;
-        this.inputManager = inputManager;
 
         // Création de la grille
-        fillGrid(grid);
+        // 0 : vide (null) | 1 : Wall | 2 : NormalGum | 3 : SuperGum | 4 : MazeGum | 5 : SneakyGum
+        // 6 : Gate (open) | 7 : Gate (closed)
+        int[][] dummyGrid = new int[][]{
+                {1, 1, 1, 7, 1, 1, 1, 1, 1, 1, 1, 7, 1, 1, 1},
+                {1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1},
+                {1, 2, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1, 2, 1},
+                {1, 2, 1, 1, 2, 2, 2, 3, 2, 2, 2, 1, 1, 2, 1},
+                {1, 2, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1},
+                {1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 1},
+                {1, 1, 2, 1, 1, 2, 1, 2, 1, 2, 1, 1, 2, 1, 1},
+                {6, 2, 2, 1, 1, 2, 1, 2, 1, 2, 1, 1, 2, 2, 6},
+                {1, 1, 2, 2, 2, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1},
+                {1, 1, 2, 1, 2, 1, 1, 4, 1, 1, 2, 1, 2, 1, 1},
+                {1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1},
+                {1, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1},
+                {1, 2, 1, 1, 1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 1},
+                {1, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 1},
+                {1, 2, 1, 2, 1, 2, 2, 0, 2, 2, 1, 2, 1, 2, 1},
+                {1, 5, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 5, 1},
+                {1, 1, 1, 7, 1, 1, 1, 1, 1, 1, 1, 7, 1, 1, 1},
+        };
+        gumAmount = 0;
+        for (int x = 0; x < TILE_AMOUNT_H; x++)
+            for (int y = 0; y < TILE_AMOUNT_V; y++)
+                switch (dummyGrid[y][x]){
+                    case 1:
+                        grid[x][y] = new Wall();
+                        break;
+                    case 2:
+                        grid[x][y] = new NormalGum(new int[] {x, y}, this);
+                        gumAmount++;
+                        break;
+                    case 3:
+                        grid[x][y] = new SuperGum(new int[] {x, y}, this);
+                        gumAmount++;
+                        break;
+                    case 4:
+                        grid[x][y] = new MazeGum(new int[] {x, y}, this);
+                        gumAmount++;
+                        break;
+                    case  5:
+                        grid[x][y] = new SneakyGum(new int[] {x, y}, this);
+                        gumAmount++;
+                        break;
+                    case 6:
+                        Gate gOpen = new Gate(true);
+                        grid[x][y] = gOpen;
+                        gates.add(gOpen);
+                        break;
+                    case 7:
+                        Gate gClosed = new Gate(false);
+                        grid[x][y] = gClosed;
+                        gates.add(gClosed);
+                        break;
+                }
+
         // Pacman
         pacman = new Pacman((7 * TILE_SIZE) + TILE_SIZE_HALF, (14 * TILE_SIZE) + TILE_SIZE_HALF, this, Entity.Direction.DOWN);
+
         // Fantômes
         for(int i = 0; i < 4; i++)
             ghosts.add(new Ghost((7 * TILE_SIZE) + TILE_SIZE_HALF, ((i + 6) * TILE_SIZE) + TILE_SIZE_HALF, this, Entity.Direction.UP, rng));
 
+        // Autre
+        score = 0;
     }
 
     // Méthodes
@@ -74,52 +133,25 @@ public class GameSpace {
     public boolean tileCrossable(int[] tileCoord){
         return grid[tileCoord[0]][tileCoord[1]] == null || grid[tileCoord[0]][tileCoord[1]].isCrosseable();
     }
+    public void cross(Entity crossingEntity, int[] tileCrossed){
+        if(grid[tileCrossed[0]][tileCrossed[1]] != null)
+            grid[tileCrossed[0]][tileCrossed[1]].onCrossed(crossingEntity);
+    }
+    public void removeGum(int[] tileCoord){
+        if(grid[tileCoord[0]][tileCoord[1]] instanceof Gum){
+            grid[tileCoord[0]][tileCoord[1]] = null;
+            gumAmount--;
+        }
+    }
+    public void addPoints(int points){
+        score += points;
+    }
+    public void swapGates(){
+        for (Gate g : gates)
+            g.swap();
+    }
 
     // Méthodes statiques
-    private static void fillGrid(GridElement[][] grid){
-
-        // 0 : vide (null) | 1 : Wall | 2 : NormalGum | 3 : SuperGum | 4 : MazeGum | 5 : SneakyGum
-        int[][] dummyGrid = new int[][]{
-                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                {1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1},
-                {1, 2, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1, 2, 1},
-                {1, 2, 1, 1, 2, 2, 2, 3, 2, 2, 2, 1, 1, 2, 1},
-                {1, 2, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1},
-                {1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 1},
-                {1, 1, 2, 1, 1, 2, 1, 2, 1, 2, 1, 1, 2, 1, 1},
-                {0, 2, 2, 1, 1, 2, 1, 2, 1, 2, 1, 1, 2, 2, 0},
-                {1, 1, 2, 2, 2, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1},
-                {1, 1, 2, 1, 2, 1, 1, 4, 1, 1, 2, 1, 2, 1, 1},
-                {1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1},
-                {1, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1},
-                {1, 2, 1, 1, 1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 1},
-                {1, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 1},
-                {1, 2, 1, 2, 1, 2, 2, 0, 2, 2, 1, 2, 1, 2, 1},
-                {1, 5, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 5, 1},
-                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-        };
-
-        for (int x = 0; x < TILE_AMOUNT_H; x++)
-            for (int y = 0; y < TILE_AMOUNT_V; y++)
-                switch (dummyGrid[y][x]){
-                    case 1:
-                        grid[x][y] = new Wall();
-                        break;
-                    case 2:
-                        grid[x][y] = new NormalGum();
-                        break;
-                    case 3:
-                        grid[x][y] = new SuperGum();
-                        break;
-                    case 4:
-                        grid[x][y] = new MazeGum();
-                        break;
-                    case  5:
-                        grid[x][y] = new SneakyGum();
-                        break;
-                }
-
-    }
     public static int[] positionToTileCoord(float[] position){
         return new int[] {(int)position[0] / TILE_SIZE, (int)position[1] / TILE_SIZE};
     }

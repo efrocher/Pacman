@@ -3,7 +3,7 @@ import java.util.Random;
 public class Ghost extends Entity {
 
     // Constantes
-    private static final float BASE_SPEED = 50f; // px / seconde
+    private static final float BASE_SPEED = 80f; // px / seconde
 
     // Attributs
     private Random rng;
@@ -33,6 +33,7 @@ public class Ghost extends Entity {
     }
     @Override
     protected boolean onCrossroad() {
+        super.onCrossroad();
         return true;
     }
     @Override

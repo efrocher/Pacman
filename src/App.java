@@ -16,7 +16,7 @@ public class App {
         InputManager inputManager = new InputManager();
 
         // Création des éléments du jeu
-        GameSpace space = new GameSpace(rng, inputManager);
+        GameSpace space = new GameSpace(rng);
         GameView view = new GameView(space);
         GameController controller = new GameController(space, view);
 
