@@ -1,18 +1,22 @@
-public class SneakyGum extends Gum{
+public class SneakyGum extends GridElement{
 
     // Attributs
 
     // GetSet
 
     // Constructeurs
-    public SneakyGum(float xPos, float yPos) {
-        super(xPos, yPos);
+    public SneakyGum() {
+        super();
     }
 
     // Méthodes
     @Override
-    public void giveBonus() {
+    public void onCrossed(Entity crossingEntity) {
 
+    }
+    @Override
+    public boolean isCrosseable() {
+        return true;
     }
 
 }

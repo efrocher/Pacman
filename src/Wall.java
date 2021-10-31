@@ -1,22 +1,19 @@
-public class SuperGum extends GridElement{
+public class Wall extends GridElement{
 
     // Attributs
 
     // GetSet
 
     // Constructeurs
-    public SuperGum() {
-        super();
-    }
 
     // Méthodes
     @Override
     public void onCrossed(Entity crossingEntity) {
 
     }
+
     @Override
     public boolean isCrosseable() {
-        return true;
+        return false;
     }
-
 }

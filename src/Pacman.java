@@ -1,7 +1,7 @@
-public class Pacman extends BehavingEntity {
+public class Pacman extends Entity {
 
     // Constantes
-    private static final float BASE_SPEED = 75f; // px / seconde
+    private static final float BASE_SPEED = 50f; // px / seconde
 
     // Attributs
 
@@ -24,7 +24,7 @@ public class Pacman extends BehavingEntity {
     @Override
     protected boolean onCrossroad() {
         Direction newDirection = InputManager.getLastInput();
-        if(newDirection != null && newDirection != direction && ((InputManager.getLastInputTimestamp() - System.nanoTime()) / 1e6) < 200){
+        if(newDirection != null && newDirection != direction && ((System.nanoTime() - InputManager.getLastInputTimestamp()) / 1e6) < 500){
             float[] newCrossroad = findNextCrossroad(nextCrossroad, newDirection);
             if(space.tileCrossable(GameSpace.positionToTileCoord(newCrossroad))){
                 setDirection(newDirection);
@@ -39,7 +39,7 @@ public class Pacman extends BehavingEntity {
     }
     @Override
     public void notifyNewInput(Direction newDirection) {
-        if(newDirection != null && newDirection.ordinal() == (direction.ordinal() + 2) % 4 && ((InputManager.getLastInputTimestamp() - System.nanoTime()) / 1e6) < 500){
+        if(newDirection != null && newDirection.ordinal() == (direction.ordinal() + 2) % 4){
             float[] newCrossroad = findNextCrossroad(getPosition(), newDirection);
             if(space.tileCrossable(GameSpace.positionToTileCoord(newCrossroad))){
                 setDirection(newDirection);

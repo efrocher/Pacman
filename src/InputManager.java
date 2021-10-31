@@ -7,21 +7,21 @@ public class InputManager implements KeyListener {
 
 
     // Attributs
-    private static BehavingEntity.Direction lastInput;
+    private static Entity.Direction lastInput;
     private static double lastInputTimestamp;
-    private static List<BehavingEntity> listeningEntities = new ArrayList<BehavingEntity>();
+    private static List<Entity> listeningEntities = new ArrayList<Entity>();
 
     // GetSet
-    public static BehavingEntity.Direction getLastInput() {
+    public static Entity.Direction getLastInput() {
         return lastInput;
     }
     public static double getLastInputTimestamp() {
         return lastInputTimestamp;
     }
-    private static void setLastInput(BehavingEntity.Direction input){
+    private static void setLastInput(Entity.Direction input){
         lastInput = input;
         lastInputTimestamp = System.nanoTime();
-        for(BehavingEntity e : listeningEntities)
+        for(Entity e : listeningEntities)
             e.notifyNewInput(lastInput);
     }
 
@@ -36,13 +36,13 @@ public class InputManager implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if(e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_Z)
-            setLastInput(BehavingEntity.Direction.UP);
+            setLastInput(Entity.Direction.UP);
         else if(e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S)
-            setLastInput(BehavingEntity.Direction.DOWN);
+            setLastInput(Entity.Direction.DOWN);
         else if(e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_Q)
-            setLastInput(BehavingEntity.Direction.LEFT);
+            setLastInput(Entity.Direction.LEFT);
         else if(e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D)
-            setLastInput(BehavingEntity.Direction.RIGHT);
+            setLastInput(Entity.Direction.RIGHT);
     }
     @Override
     public void keyReleased(KeyEvent e) {
@@ -51,7 +51,7 @@ public class InputManager implements KeyListener {
     public static void clearLastInput(){
         lastInput = null;
     }
-    public static void subscribe(BehavingEntity entity){
+    public static void subscribe(Entity entity){
         listeningEntities.add(entity);
     }
 

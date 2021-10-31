@@ -1,9 +1,9 @@
 import java.util.Random;
 
-public class Ghost extends BehavingEntity {
+public class Ghost extends Entity {
 
     // Constantes
-    private static final float BASE_SPEED = 75f; // px / seconde
+    private static final float BASE_SPEED = 50f; // px / seconde
 
     // Attributs
     private Random rng;

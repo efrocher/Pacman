@@ -1,18 +1,22 @@
-public class NormalGum extends Gum{
+public class NormalGum extends GridElement{
 
     // Attributs
 
     // GetSet
 
     // Constructeurs
-    public NormalGum(float xPos, float yPos) {
-        super(xPos, yPos);
+    public NormalGum() {
+        super();
     }
 
     // Méthodes
     @Override
-    public void giveBonus() {
+    public void onCrossed(Entity crossingEntity) {
 
+    }
+    @Override
+    public boolean isCrosseable() {
+        return true;
     }
 
 }
