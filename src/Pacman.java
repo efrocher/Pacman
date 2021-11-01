@@ -52,7 +52,8 @@ public class Pacman extends Entity {
         }
     }
     @Override
-    public void notifyNewInput(Direction newDirection) {
+    public void onNewInput(Direction newDirection) {
+
         if(newDirection != null && newDirection.ordinal() == (direction.ordinal() + 2) % 4){
             float[] newCrossroad = findNextCrossroad(getPosition(), newDirection);
             if(space.tileCrossable(GameSpace.positionToTileCoord(newCrossroad))){
@@ -61,6 +62,7 @@ public class Pacman extends Entity {
                 InputManager.clearLastInput();
             }
         }
+
     }
     public void addLife(int lives){
         this.lives += lives;

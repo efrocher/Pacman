@@ -37,6 +37,9 @@ public class GameSpace {
     public int getGumAmount() {
         return gumAmount;
     }
+    public int getScore() {
+        return score;
+    }
 
     // Constructeurs
     public GameSpace(Random rng){

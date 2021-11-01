@@ -79,7 +79,7 @@ public abstract class Entity {
         return true;
     }
     protected abstract void onEntityCollision(Entity otherEntity);
-    public abstract void notifyNewInput(Direction input);
+    public abstract void onNewInput(Direction input);
     public void relocate(float[] newPosition, Direction direction){
         position[0] = newPosition[0];
         position[1] = newPosition[1];

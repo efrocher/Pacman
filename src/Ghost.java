@@ -23,6 +23,7 @@ public class Ghost extends Entity {
     }
     @Override
     protected void onRoadBlock() {
+
         Direction newDirection;
         float[] newCrossroad;
         do{
@@ -31,6 +32,7 @@ public class Ghost extends Entity {
         } while(newDirection.ordinal() % 2 == direction.ordinal() % 2 || !space.tileCrossable(GameSpace.positionToTileCoord(newCrossroad)));
         setDirection(newDirection);
         nextCrossroad = newCrossroad;
+
     }
     @Override
     protected boolean onCrossroad() {
@@ -42,7 +44,7 @@ public class Ghost extends Entity {
 
     }
     @Override
-    public void notifyNewInput(Direction input) {
+    public void onNewInput(Direction input) {
 
     }
 }
