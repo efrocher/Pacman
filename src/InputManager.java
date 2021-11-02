@@ -22,7 +22,7 @@ public class InputManager implements KeyListener {
         lastInput = input;
         lastInputTimestamp = System.nanoTime();
         for(Entity e : listeningEntities)
-            e.notifyNewInput(lastInput);
+            e.onNewInput(lastInput);
     }
 
     // Constructeurs

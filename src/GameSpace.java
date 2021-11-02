@@ -13,6 +13,7 @@ public class GameSpace {
     public static final int HEIGHT = TILE_AMOUNT_V * TILE_SIZE; // px
     public static final int[] DIMENTION = {WIDTH, HEIGHT};
     public static final int[] LABYRINTH_DIMENTION = {TILE_AMOUNT_H, TILE_AMOUNT_V};
+    public static final int[] SPAWN_PACMAN = {7, 14};
 
     // Attributs
     private final Random rng;
@@ -32,6 +33,12 @@ public class GameSpace {
     }
     public List<Ghost> getGhosts() {
         return ghosts;
+    }
+    public int getGumAmount() {
+        return gumAmount;
+    }
+    public int getScore() {
+        return score;
     }
 
     // Constructeurs
@@ -97,7 +104,7 @@ public class GameSpace {
                 }
 
         // Pacman
-        pacman = new Pacman((7 * TILE_SIZE) + TILE_SIZE_HALF, (14 * TILE_SIZE) + TILE_SIZE_HALF, this, Entity.Direction.DOWN);
+        pacman = new Pacman(tileCoordToPosition(SPAWN_PACMAN[0]), tileCoordToPosition(SPAWN_PACMAN[1]), this, Entity.Direction.DOWN);
 
         // Fantômes
         for(int i = 0; i < 4; i++)
@@ -144,6 +151,7 @@ public class GameSpace {
         }
     }
     public void addPoints(int points){
+        pacman.addLife(((score + points) / 5000) - (score / 5000));
         score += points;
     }
     public void swapGates(){
@@ -155,8 +163,20 @@ public class GameSpace {
     public static int[] positionToTileCoord(float[] position){
         return new int[] {(int)position[0] / TILE_SIZE, (int)position[1] / TILE_SIZE};
     }
+    public static int[] positionToTileCoord(float positionX, float positionY){
+        return new int[] {(int)positionX / TILE_SIZE, (int)positionY / TILE_SIZE};
+    }
+    public static int positionToTileCoord(float position){
+        return (int)position / TILE_SIZE;
+    }
     public static float[] tileCoordToPosition(int[] tileCoord){
         return new float[] {(tileCoord[0] * TILE_SIZE) + TILE_SIZE_HALF, (tileCoord[1] * TILE_SIZE) + TILE_SIZE_HALF};
+    }
+    public static float[] tileCoordToPosition(int tileCoordX, int tileCoordY){
+        return new float[] {(tileCoordX * TILE_SIZE) + TILE_SIZE_HALF, (tileCoordY * TILE_SIZE) + TILE_SIZE_HALF};
+    }
+    public static float tileCoordToPosition(int tileCoord){
+        return (tileCoord * TILE_SIZE) + TILE_SIZE_HALF;
     }
     public static void wrapPosition(float[] position, int axis){
 

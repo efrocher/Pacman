@@ -1,14 +1,9 @@
 import javax.swing.*;
+import java.awt.*;
 import java.util.Random;
-
-import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
 
 public class App {
 
-    private static final int FRAME_DEFAULT_POSITION_X = 200;
-    private static final int FRAME_DEFAULT_POSITION_Y = 200;
-
-    // Ne touchez pas à ce code
     public static void main(String[] args) throws InterruptedException {
 
         // Utilitaires
@@ -22,7 +17,7 @@ public class App {
 
         // Création de la fenêtre
         JFrame frame = new JFrame("Pacman");
-        frame.add(view);
+        frame.getContentPane().add(view);
         frame.addKeyListener(inputManager);
         frame.getContentPane().setPreferredSize(view.getSize());
         frame.pack();
