@@ -185,15 +185,15 @@ public class GameView extends JPanel implements SpaceObserver{
     }
     @Override
     public void onPacStateChanged(PacState state) {
-        if(space.getPacman().getState() instanceof RegularState) {
+        if(state instanceof RegularState) {
             currentPacmanColor = COLOR_PACMAN_NORMAL;
             currentGhostColor = COLOR_GHOST_NORMAL;
         }
-        else if(space.getPacman().getState() instanceof SneakyState) {
+        else if(state instanceof SneakyState) {
             currentPacmanColor = COLOR_PACMAN_SNEAKY;
             currentGhostColor = COLOR_GHOST_NORMAL;
         }
-        else if(space.getPacman().getState() instanceof SuperState) {
+        else if(state instanceof SuperState) {
             currentPacmanColor = COLOR_PACMAN_SUPER;
             currentGhostColor = COLOR_GHOST_WEAK;
         }
