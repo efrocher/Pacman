@@ -57,12 +57,12 @@ public class GameView extends JPanel {
         setSize(GameSpace.WIDTH * SCALE, (GameSpace.HEIGHT + HUD_HEIGHT) * SCALE);
 
         // Labels
-        scoreLabel = new ScoreLabel(space.getScore(), COLOR_HUD);
+        scoreLabel = new ScoreLabel(space, COLOR_HUD);
         scoreLabel.setLocation(SCORE_LABEL_POSITION[0], SCORE_LABEL_POSITION[1]);
         scoreLabel.setSize(HUD_LABEL_DIMENSION);
         add(scoreLabel);
 
-        livesLabel = new LivesLabel(space.getPacman().getLives(), COLOR_HUD);
+        livesLabel = new LivesLabel(space, COLOR_HUD);
         livesLabel.setLocation(LIVES_LABEL_POSITION[0], LIVES_LABEL_POSITION[1]);
         livesLabel.setSize(HUD_LABEL_DIMENSION);
         add(livesLabel);
@@ -70,10 +70,6 @@ public class GameView extends JPanel {
     }
 
     // Méthodes
-    public void updateScore(int newScore){
-        scoreLabel.setScore(newScore);
-        //scoreLabel.repaint();
-    }
     @Override
     public void paintComponent(Graphics g) {
 
@@ -83,8 +79,6 @@ public class GameView extends JPanel {
         drawNonWallElements(g);
         drawEntities(g);
         drawHudLine(g);
-        scoreLabel.setScore(space.getScore());
-        livesLabel.setLives(space.getPacman().getLives());
 
     }
     private void drawHudLine(Graphics g){

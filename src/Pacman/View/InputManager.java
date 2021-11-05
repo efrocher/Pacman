@@ -13,7 +13,7 @@ public class InputManager implements KeyListener {
     // Attributs
     private static Entity.Direction lastInput;
     private static double lastInputTimestamp;
-    private static List<Entity> listeningEntities = new ArrayList<Entity>();
+    private static List<InputObserver> inputObservers = new ArrayList<InputObserver>();
 
     // GetSet
     public static Entity.Direction getLastInput() {
@@ -25,8 +25,8 @@ public class InputManager implements KeyListener {
     private static void setLastInput(Entity.Direction input){
         lastInput = input;
         lastInputTimestamp = System.nanoTime();
-        for(Entity e : listeningEntities)
-            e.onNewInput(lastInput);
+        for(InputObserver o : inputObservers)
+            o.onNewInput(lastInput);
     }
 
     // Constructeurs
@@ -55,8 +55,8 @@ public class InputManager implements KeyListener {
     public static void clearLastInput(){
         lastInput = null;
     }
-    public static void subscribe(Entity entity){
-        listeningEntities.add(entity);
+    public static void subscribe(InputObserver observer){
+        inputObservers.add(observer);
     }
 
 }

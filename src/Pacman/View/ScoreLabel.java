@@ -1,9 +1,11 @@
 package Pacman.View;
 
+import Pacman.Space.GameSpace;
+
 import javax.swing.*;
 import java.awt.*;
 
-public class ScoreLabel extends JLabel {
+public class ScoreLabel extends JLabel implements ScoreObserver{
 
     // Attributs
     private static final String BASE_TEXT = "SCORE : ";
@@ -11,12 +13,12 @@ public class ScoreLabel extends JLabel {
     // GetSet
 
     // Constructeurs
-    public ScoreLabel(int startScore, Color color) {
+    public ScoreLabel(GameSpace space, Color color) {
 
         super();
 
         setForeground(color);
-        setScore(startScore);
+        setScore(space.subscribeToScoreUpdates(this));
         setFont(new Font("Dialog", Font.PLAIN, GameView.HUD_LABEL_DIMENSION.height));
 
     }
@@ -25,5 +27,8 @@ public class ScoreLabel extends JLabel {
     public void setScore(int score){
         setText(BASE_TEXT + score);
     }
-
+    @Override
+    public void onScoreChanged(int newScore) {
+        setScore(newScore);
+    }
 }

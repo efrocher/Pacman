@@ -4,8 +4,13 @@ import Pacman.Space.Entities.PacStates.PacState;
 import Pacman.Space.Entities.PacStates.RegularState;
 import Pacman.Space.GameSpace;
 import Pacman.View.InputManager;
+import Pacman.View.InputObserver;
+import Pacman.View.LivesObserver;
 
-public class Pacman extends Entity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Pacman extends Entity implements InputObserver {
 
     // Constantes
     private static final float BASE_SPEED = 80f; // px / seconde
@@ -14,6 +19,7 @@ public class Pacman extends Entity {
     // Attributs
     private int lives;
     private PacState state;
+    private final List<LivesObserver> livesObservers = new ArrayList<LivesObserver>();
 
     // GetSet
     public int getLives() {
@@ -83,8 +89,18 @@ public class Pacman extends Entity {
     public void die() {
         lives--;
         relocate(GameSpace.tileCoordToPosition(GameSpace.SPAWN_PACMAN), Direction.DOWN);
+        notifyLivesUpdatesSubscribers();
     }
     public void addLife(int lives){
         this.lives += lives;
+        notifyLivesUpdatesSubscribers();
+    }
+    public int subscribeToLivesUpdates(LivesObserver observer){
+        livesObservers.add(observer);
+        return lives;
+    }
+    private void notifyLivesUpdatesSubscribers(){
+        for(LivesObserver o : livesObservers)
+            o.onLivesChanged(lives);
     }
 }

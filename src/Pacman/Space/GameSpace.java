@@ -7,6 +7,7 @@ import Pacman.Space.GridElements.Gate;
 import Pacman.Space.GridElements.GridElement;
 import Pacman.Space.GridElements.Gums.*;
 import Pacman.Space.GridElements.Wall;
+import Pacman.View.ScoreObserver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class GameSpace {
     private final List<Ghost> ghosts = new ArrayList<Ghost>();
     private final GridElement[][] grid = new GridElement[TILE_AMOUNT_H][TILE_AMOUNT_V]; // True = passage possible | False = passage impossible
     private final List<Gate> gates = new ArrayList<Gate>();
+    private final List<ScoreObserver> scoreObservers = new ArrayList<ScoreObserver>();
     private int gumAmount;
     private int score;
 
@@ -164,10 +166,19 @@ public class GameSpace {
     public void addPoints(int points){
         pacman.addLife(((score + points) / 5000) - (score / 5000));
         score += points;
+        notifyScoreUpdatesSubscribers();
     }
     public void swapGates(){
         for (Gate g : gates)
             g.swap();
+    }
+    public int subscribeToScoreUpdates(ScoreObserver observer){
+        scoreObservers.add(observer);
+        return score;
+    }
+    private void notifyScoreUpdatesSubscribers(){
+        for(ScoreObserver o : scoreObservers)
+            o.onScoreChanged(score);
     }
 
     // Méthodes statiques

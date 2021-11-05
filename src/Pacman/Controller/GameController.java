@@ -4,6 +4,7 @@ import Pacman.Space.Entities.Entity;
 import Pacman.Space.GameSpace;
 import Pacman.View.GameView;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class GameController {
     // Méthodes
     public void run() throws InterruptedException {
 
+        // Déroulement du jeu
         timeStamp = System.nanoTime() / 1e6;
         while(space.getGumAmount() > 0 && space.getPacman().getLives() > 0){
 
@@ -59,6 +61,17 @@ public class GameController {
 
             }
         }
+
+        // Fin
+        String endMessage;
+        if(space.getPacman().getLives() <= 0)
+            endMessage = "Défaite...";
+        else
+            endMessage = "Victoire !";
+
+        JOptionPane.showMessageDialog(null, endMessage);
+        System.exit(0);
+
     }
 
 }

@@ -52,10 +52,6 @@ public class Ghost extends Entity {
 
     }
     @Override
-    public void onNewInput(Direction input) {
-
-    }
-    @Override
     public void die() {
         relocate(GameSpace.tileCoordToPosition(space.SPAWN_GHOST), Direction.UP);
     }
