@@ -1,5 +1,3 @@
-package Pacman;
-
 import Pacman.Controller.GameController;
 import Pacman.Space.GameSpace;
 import Pacman.View.GameView;
@@ -22,7 +20,7 @@ public class App {
         GameController controller = new GameController(space, view);
 
         // Création de la fenêtre
-        JFrame frame = new JFrame("Pacman.Space.Entities.Pacman");
+        JFrame frame = new JFrame("Pacman");
         frame.getContentPane().add(view);
         frame.addKeyListener(inputManager);
         frame.getContentPane().setPreferredSize(view.getSize());
