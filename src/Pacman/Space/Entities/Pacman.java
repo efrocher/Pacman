@@ -5,10 +5,7 @@ import Pacman.Space.Entities.PacStates.RegularState;
 import Pacman.Space.GameSpace;
 import Pacman.View.InputManager;
 import Pacman.View.InputObserver;
-import Pacman.View.LivesObserver;
-
-import java.util.ArrayList;
-import java.util.List;
+import Pacman.View.SpaceObserver;
 
 public class Pacman extends Entity implements InputObserver {
 
@@ -19,7 +16,6 @@ public class Pacman extends Entity implements InputObserver {
     // Attributs
     private int lives;
     private PacState state;
-    private final List<LivesObserver> livesObservers = new ArrayList<LivesObserver>();
 
     // GetSet
     public int getLives() {
@@ -30,6 +26,7 @@ public class Pacman extends Entity implements InputObserver {
     }
     public void setState(PacState state) {
         this.state = state;
+        notifyStateChanged();
     }
 
     // Constructeurs
@@ -89,18 +86,18 @@ public class Pacman extends Entity implements InputObserver {
     public void die() {
         lives--;
         relocate(GameSpace.tileCoordToPosition(GameSpace.SPAWN_PACMAN), Direction.DOWN);
-        notifyLivesUpdatesSubscribers();
+        notifyLivesChanged();
     }
     public void addLife(int lives){
         this.lives += lives;
-        notifyLivesUpdatesSubscribers();
+        notifyLivesChanged();
     }
-    public int subscribeToLivesUpdates(LivesObserver observer){
-        livesObservers.add(observer);
-        return lives;
-    }
-    private void notifyLivesUpdatesSubscribers(){
-        for(LivesObserver o : livesObservers)
+    private void notifyLivesChanged(){
+        for(SpaceObserver o : space.getObservers())
             o.onLivesChanged(lives);
+    }
+    private void notifyStateChanged(){
+        for(SpaceObserver o : space.getObservers())
+            o.onPacStateChanged(state);
     }
 }

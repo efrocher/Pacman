@@ -1,6 +1,7 @@
 package Pacman.View;
 
 import Pacman.Space.Entities.Ghost;
+import Pacman.Space.Entities.PacStates.PacState;
 import Pacman.Space.Entities.PacStates.RegularState;
 import Pacman.Space.Entities.PacStates.SneakyState;
 import Pacman.Space.Entities.PacStates.SuperState;
@@ -13,7 +14,7 @@ import Pacman.Space.GridElements.Wall;
 import javax.swing.*;
 import java.awt.*;
 
-public class GameView extends JPanel {
+public class GameView extends JPanel implements SpaceObserver{
 
     // Constantes
     public final static int SCALE = 2;
@@ -34,6 +35,8 @@ public class GameView extends JPanel {
     private final static Color COLOR_GUM_SNEAKY = Color.MAGENTA;
     private final static Color COLOR_GUM_SUPER = Color.ORANGE;
     private final static Color COLOR_GUM_MAZE = Color.GREEN;
+    private Color currentPacmanColor;
+    private Color currentGhostColor;
 
 
     // Attributs
@@ -55,14 +58,21 @@ public class GameView extends JPanel {
         setLayout(null);
         setOpaque(true);
         setSize(GameSpace.WIDTH * SCALE, (GameSpace.HEIGHT + HUD_HEIGHT) * SCALE);
+        space.subscribe(this);
+
+        // State-depending colors
+        currentPacmanColor = COLOR_PACMAN_NORMAL;
+        currentGhostColor = COLOR_GHOST_NORMAL;
 
         // Labels
-        scoreLabel = new ScoreLabel(space, COLOR_HUD);
+        scoreLabel = new ScoreLabel(COLOR_HUD);
+        scoreLabel.setScore(space.getScore());
         scoreLabel.setLocation(SCORE_LABEL_POSITION[0], SCORE_LABEL_POSITION[1]);
         scoreLabel.setSize(HUD_LABEL_DIMENSION);
         add(scoreLabel);
 
-        livesLabel = new LivesLabel(space, COLOR_HUD);
+        livesLabel = new LivesLabel(COLOR_HUD);
+        livesLabel.setLives(space.getPacman().getLives());
         livesLabel.setLocation(LIVES_LABEL_POSITION[0], LIVES_LABEL_POSITION[1]);
         livesLabel.setSize(HUD_LABEL_DIMENSION);
         add(livesLabel);
@@ -155,10 +165,7 @@ public class GameView extends JPanel {
     private void drawEntities(Graphics g) {
 
         // Ghosts
-        if(space.getPacman().getState() instanceof SuperState)
-            g.setColor(COLOR_GHOST_WEAK);
-        else g.setColor(COLOR_GHOST_NORMAL);
-
+        g.setColor(currentGhostColor);
         for(Ghost ghost : space.getGhosts())
             g.fillOval(
                     (int) (ghost.getPosition()[0] - GameSpace.TILE_SIZE_HALF + (GameSpace.TILE_SIZE / 5)) * SCALE,
@@ -168,18 +175,35 @@ public class GameView extends JPanel {
 
 
         // Pacman.Space.Entities.Pacman
-        if(space.getPacman().getState() instanceof RegularState)
-            g.setColor(COLOR_PACMAN_NORMAL);
-        else if(space.getPacman().getState() instanceof SneakyState)
-            g.setColor(COLOR_PACMAN_SNEAKY);
-        else if(space.getPacman().getState() instanceof SuperState)
-            g.setColor(COLOR_PACMAN_SUPER);
-
+        g.setColor(currentPacmanColor);
         g.fillOval(
                 (int) (space.getPacman().getPosition()[0] - GameSpace.TILE_SIZE_HALF + (GameSpace.TILE_SIZE / 5)) * SCALE,
                 (int) (space.getPacman().getPosition()[1] - GameSpace.TILE_SIZE_HALF + HUD_HEIGHT + (GameSpace.TILE_SIZE / 5)) * SCALE,
                 GameSpace.TILE_SIZE * 3/5 * SCALE,
                 GameSpace.TILE_SIZE * 3/5 * SCALE);
 
+    }
+    @Override
+    public void onPacStateChanged(PacState state) {
+        if(space.getPacman().getState() instanceof RegularState) {
+            currentPacmanColor = COLOR_PACMAN_NORMAL;
+            currentGhostColor = COLOR_GHOST_NORMAL;
+        }
+        else if(space.getPacman().getState() instanceof SneakyState) {
+            currentPacmanColor = COLOR_PACMAN_SNEAKY;
+            currentGhostColor = COLOR_GHOST_NORMAL;
+        }
+        else if(space.getPacman().getState() instanceof SuperState) {
+            currentPacmanColor = COLOR_PACMAN_SUPER;
+            currentGhostColor = COLOR_GHOST_WEAK;
+        }
+    }
+    @Override
+    public void onLivesChanged(int newLives) {
+        scoreLabel.setScore(newLives);
+    }
+    @Override
+    public void onScoreChanged(int newScore) {
+       scoreLabel.setScore(newScore);
     }
 }
