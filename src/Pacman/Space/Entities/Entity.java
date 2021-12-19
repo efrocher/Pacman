@@ -33,6 +33,9 @@ public abstract class Entity {
     public void setPositionY(float y){
         position[1] = y;
     }
+    public Direction getDirection() {
+        return direction;
+    }
     protected void setDirection(Direction direction){
         this.direction = direction;
         if(direction == Direction.LEFT || direction == Direction.RIGHT)

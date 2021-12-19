@@ -13,6 +13,9 @@ import Pacman.Space.GridElements.Wall;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
 
 public class GameView extends JPanel implements SpaceObserver{
 
@@ -35,14 +38,15 @@ public class GameView extends JPanel implements SpaceObserver{
     private final static Color COLOR_GUM_SNEAKY = Color.MAGENTA;
     private final static Color COLOR_GUM_SUPER = Color.ORANGE;
     private final static Color COLOR_GUM_MAZE = Color.GREEN;
-    private Color currentPacmanColor;
-    private Color currentGhostColor;
-
 
     // Attributs
     private GameSpace space;
     private ScoreLabel scoreLabel;
     private LivesLabel livesLabel;
+    private Color currentPacmanColor;
+    private Color currentGhostColor;
+    private Area pacmanShapeClosed;
+    private Area pacmanShapeOpen;
 
     // GetSet
 
@@ -77,6 +81,9 @@ public class GameView extends JPanel implements SpaceObserver{
         livesLabel.setSize(HUD_LABEL_DIMENSION);
         add(livesLabel);
 
+        // Generation des formes
+        generatePacmanShapes();
+
     }
 
     // Méthodes
@@ -84,11 +91,17 @@ public class GameView extends JPanel implements SpaceObserver{
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
-        drawBackground(g);
-        drawWalls(g);
-        drawNonWallElements(g);
-        drawEntities(g);
-        drawHudLine(g);
+
+        Graphics2D g2D = (Graphics2D) g;
+        g2D.translate(0, HUD_HEIGHT * SCALE);
+
+        drawBackground(g2D);
+        drawWalls(g2D);
+        drawNonWallElements(g2D);
+        drawEntities(g2D);
+
+        g2D.translate(0, HUD_HEIGHT * -SCALE);
+        drawHudLine(g2D);
 
     }
     private void drawHudLine(Graphics g){
@@ -106,7 +119,7 @@ public class GameView extends JPanel implements SpaceObserver{
         g.setColor(COLOR_GAME_BACKGROUND);
         g.fillRect(
                 0,
-                HUD_HEIGHT * SCALE,
+                SCALE,
                 GameSpace.WIDTH * SCALE,
                 GameSpace.HEIGHT * SCALE);
 
@@ -121,7 +134,7 @@ public class GameView extends JPanel implements SpaceObserver{
                 if(element != null && (element instanceof Wall || (element instanceof Gate && !element.isCrosseable()))){
                     g.fillRect(
                             x * GameSpace.TILE_SIZE * SCALE,
-                            ((y * GameSpace.TILE_SIZE) + HUD_HEIGHT) * SCALE,
+                            (y * GameSpace.TILE_SIZE) * SCALE,
                             GameSpace.TILE_SIZE * SCALE,
                             GameSpace.TILE_SIZE * SCALE);
                 }
@@ -157,30 +170,58 @@ public class GameView extends JPanel implements SpaceObserver{
         // Draw
         g.fillOval(
                 ((x * GameSpace.TILE_SIZE) + GameSpace.TILE_SIZE_HALF - (GameSpace.TILE_SIZE / 10)) * SCALE,
-                ((y * GameSpace.TILE_SIZE) + GameSpace.TILE_SIZE_HALF + HUD_HEIGHT - (GameSpace.TILE_SIZE / 10)) * SCALE,
+                ((y * GameSpace.TILE_SIZE) + GameSpace.TILE_SIZE_HALF - (GameSpace.TILE_SIZE / 10)) * SCALE,
                 GameSpace.TILE_SIZE / 5 * SCALE,
                 GameSpace.TILE_SIZE / 5 * SCALE);
 
     }
-    private void drawEntities(Graphics g) {
+    private void drawEntities(Graphics2D g) {
 
         // Ghosts
         g.setColor(currentGhostColor);
         for(Ghost ghost : space.getGhosts())
             g.fillOval(
                     (int) (ghost.getPosition()[0] - GameSpace.TILE_SIZE_HALF + (GameSpace.TILE_SIZE / 5)) * SCALE,
-                    (int) (ghost.getPosition()[1] - GameSpace.TILE_SIZE_HALF + HUD_HEIGHT + (GameSpace.TILE_SIZE / 5)) * SCALE,
+                    (int) (ghost.getPosition()[1] - GameSpace.TILE_SIZE_HALF + (GameSpace.TILE_SIZE / 5)) * SCALE,
                     GameSpace.TILE_SIZE * 3/5 * SCALE,
                     GameSpace.TILE_SIZE * 3/5 * SCALE);
 
 
-        // Pacman.Space.Entities.Pacman
+        // Pacman
         g.setColor(currentPacmanColor);
-        g.fillOval(
-                (int) (space.getPacman().getPosition()[0] - GameSpace.TILE_SIZE_HALF + (GameSpace.TILE_SIZE / 5)) * SCALE,
-                (int) (space.getPacman().getPosition()[1] - GameSpace.TILE_SIZE_HALF + HUD_HEIGHT + (GameSpace.TILE_SIZE / 5)) * SCALE,
-                GameSpace.TILE_SIZE * 3/5 * SCALE,
-                GameSpace.TILE_SIZE * 3/5 * SCALE);
+        drawPacman(g);
+
+    }
+    private void drawPacman(Graphics2D g){
+
+        // Position
+        int pacX = (int)(space.getPacman().getPosition()[0]) * SCALE;
+        int pacY = (int)(space.getPacman().getPosition()[1]) * SCALE;
+        g.translate(pacX, pacY);
+
+        // Gestion rotation et ouverture bouche
+        if(System.currentTimeMillis() % 400 > 200){
+            AffineTransform transform = new AffineTransform();
+            Area pacmanShapeOpenRotated = (Area)pacmanShapeOpen.clone();
+            switch (space.getPacman().getDirection()){
+                case UP:
+                    transform.rotate(Math.PI + Math.PI/2);
+                    break;
+                case DOWN:
+                    transform.rotate(Math.PI/2);
+                    break;
+                case LEFT:
+                    transform.rotate(Math.PI);
+                    break;
+            }
+            //transform.rotate(Math.PI * 2);
+            pacmanShapeOpenRotated.transform(transform);
+            g.fill(pacmanShapeOpenRotated);
+        }
+        else
+            g.fill(pacmanShapeClosed);
+
+        g.translate(-pacX, -pacY);
 
     }
     @Override
@@ -200,10 +241,31 @@ public class GameView extends JPanel implements SpaceObserver{
     }
     @Override
     public void onLivesChanged(int newLives) {
-        scoreLabel.setScore(newLives);
+        livesLabel.setLives(newLives);
     }
     @Override
     public void onScoreChanged(int newScore) {
        scoreLabel.setScore(newScore);
+    }
+
+    // Méthodes de générations des formes appelées dans le constructeur
+    private void generatePacmanShapes(){
+
+        // Body
+        double diametre = GameSpace.TILE_SIZE * 3/5 * SCALE;
+        pacmanShapeClosed = new Area(new Ellipse2D.Double(
+                -diametre / 2,
+                -diametre / 2,
+                diametre,
+                diametre));
+
+        // Mouth
+        pacmanShapeOpen = (Area)pacmanShapeClosed.clone();
+        java.awt.Polygon mouth = new java.awt.Polygon();
+        mouth.addPoint(0, 0);
+        mouth.addPoint((int) diametre, (int) -diametre);
+        mouth.addPoint((int) diametre, (int) diametre);
+        pacmanShapeOpen.subtract(new Area(mouth));
+
     }
 }
