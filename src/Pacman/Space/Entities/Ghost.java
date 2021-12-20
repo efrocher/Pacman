@@ -24,10 +24,12 @@ public class Ghost extends Entity {
 
     // Méthodes
     public void behave() {
-        if(space.getPacman().getState() instanceof SuperState)
-            move(0.5f);
-        else
-            move(1);
+        if(space.getPacmanStartedMoving()){
+            if(space.getPacman().getState() instanceof SuperState)
+                move(0.5f);
+            else
+                move(1f);
+        }
     }
     @Override
     protected void onRoadBlock() {

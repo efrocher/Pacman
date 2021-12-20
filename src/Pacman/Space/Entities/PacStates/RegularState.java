@@ -25,6 +25,10 @@ public class RegularState extends PacState {
             pacman.die();
     }
     @Override
+    public void behave() {
+        pacman.move(1);
+    }
+    @Override
     protected void onOutOfDuration() {
 
     }

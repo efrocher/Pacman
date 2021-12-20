@@ -36,6 +36,7 @@ public class GameSpace {
     private final List<SpaceObserver> observers = new ArrayList<SpaceObserver>();
     private int gumAmount;
     private int score;
+    private Boolean pacmanStartedMoving;
 
     // GetSet
     public GridElement getElementAt(int[] tileCoord){
@@ -55,6 +56,12 @@ public class GameSpace {
     }
     public List<SpaceObserver> getObservers() {
         return observers;
+    }
+    public Boolean getPacmanStartedMoving() {
+        return pacmanStartedMoving;
+    }
+    public void setPacmanStartedMoving(Boolean pacmanStartedMoving) {
+        this.pacmanStartedMoving = pacmanStartedMoving;
     }
 
     // Constructeurs
@@ -120,7 +127,8 @@ public class GameSpace {
                 }
 
         // Pacman.Space.Entities.Pacman
-        pacman = new Pacman(tileCoordToPosition(SPAWN_PACMAN[0]), tileCoordToPosition(SPAWN_PACMAN[1]), this, Entity.Direction.DOWN);
+        pacman = new Pacman(tileCoordToPosition(SPAWN_PACMAN[0]), tileCoordToPosition(SPAWN_PACMAN[1]), this, Entity.Direction.RIGHT);
+        pacmanStartedMoving = false;
 
         // Fantômes
         for(int i = 0; i < 4; i++)

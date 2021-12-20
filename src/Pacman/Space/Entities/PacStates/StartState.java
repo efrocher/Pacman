@@ -3,33 +3,30 @@ package Pacman.Space.Entities.PacStates;
 import Pacman.Space.Entities.Entity;
 import Pacman.Space.Entities.Pacman;
 
-public class SneakyState extends PacState{
-
-    // Constantes
-    private static final int DURATION = 10000;
+public class StartState extends PacState{
 
     // Attributs
+    private static final int DURATION = -1;
 
     // GetSet
 
     // Constructeurs
-    public SneakyState(Pacman pacman) {
+    public StartState(Pacman pacman) {
         super(pacman, DURATION);
     }
 
     // Méthodes
     @Override
     public void onEntityCollision(Entity otherEntity) {
-
+        // Undying
     }
     @Override
     public void behave() {
-        checkDuration();
-        pacman.move(1);
+
     }
     @Override
     protected void onOutOfDuration() {
-        pacman.setState(new RegularState(pacman));
+
     }
 
 }

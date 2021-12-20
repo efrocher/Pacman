@@ -24,9 +24,9 @@ public abstract class PacState {
     public void checkDuration(){
         if(duration > -1 && (System.nanoTime() - startTimeStamp) / 1e6 > duration)
             onOutOfDuration();
-
     }
     public abstract void onEntityCollision(Entity otherEntity);
+    public abstract void behave();
     protected abstract void onOutOfDuration();
 
 }

@@ -214,7 +214,6 @@ public class GameView extends JPanel implements SpaceObserver{
                     transform.rotate(Math.PI);
                     break;
             }
-            //transform.rotate(Math.PI * 2);
             pacmanShapeOpenRotated.transform(transform);
             g.fill(pacmanShapeOpenRotated);
         }

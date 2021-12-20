@@ -2,6 +2,7 @@ package Pacman.Space.Entities;
 
 import Pacman.Space.Entities.PacStates.PacState;
 import Pacman.Space.Entities.PacStates.RegularState;
+import Pacman.Space.Entities.PacStates.StartState;
 import Pacman.Space.GameSpace;
 import Pacman.View.InputManager;
 import Pacman.View.InputObserver;
@@ -34,13 +35,12 @@ public class Pacman extends Entity implements InputObserver {
         super(xPos, yPos, space, direction, BASE_SPEED, HIT_RADIUS);
         InputManager.subscribe(this);
         lives = 3;
-        state = new RegularState(this);
+        state = new StartState(this);
     }
 
     // Méthodes
     public void behave(){
-        state.checkDuration();
-        move(1);
+        state.behave();
     }
     @Override
     protected void onRoadBlock() {
@@ -72,6 +72,13 @@ public class Pacman extends Entity implements InputObserver {
     @Override
     public void onNewInput(Direction newDirection) {
 
+        // Départ de pacman si en état de départ
+        if(state instanceof StartState){
+            state = new RegularState(this);
+            space.setPacmanStartedMoving(true);
+        }
+
+        // Changement de direction
         if(newDirection != null && newDirection.ordinal() == (direction.ordinal() + 2) % 4){
             float[] newCrossroad = findNextCrossroad(getPosition(), newDirection);
             if(space.tileCrossable(GameSpace.positionToTileCoord(newCrossroad))){
@@ -83,10 +90,11 @@ public class Pacman extends Entity implements InputObserver {
 
     }
     @Override
-    public void die() {
+    public void die(){
         lives--;
-        relocate(GameSpace.tileCoordToPosition(GameSpace.SPAWN_PACMAN), Direction.DOWN);
+        relocate(GameSpace.tileCoordToPosition(GameSpace.SPAWN_PACMAN), Direction.RIGHT);
         notifyLivesChanged();
+        state = new StartState(this);
     }
     public void addLife(int lives){
         this.lives += lives;

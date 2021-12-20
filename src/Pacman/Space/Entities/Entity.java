@@ -60,7 +60,7 @@ public abstract class Entity {
 
     // Méthodes
     public abstract void behave();
-    protected void move(float speedModifier){
+    public void move(float speedModifier){
 
         // Var
         float[] position = getPosition();

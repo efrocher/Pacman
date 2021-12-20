@@ -25,6 +25,11 @@ public class SuperState extends PacState{
             otherEntity.die();
     }
     @Override
+    public void behave() {
+        checkDuration();
+        pacman.move(1);
+    }
+    @Override
     protected void onOutOfDuration() {
         pacman.setState(new RegularState(pacman));
     }
