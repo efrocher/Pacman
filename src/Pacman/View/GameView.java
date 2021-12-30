@@ -1,10 +1,7 @@
 package Pacman.View;
 
 import Pacman.Space.Entities.Ghost;
-import Pacman.Space.Entities.PacStates.PacState;
-import Pacman.Space.Entities.PacStates.RegularState;
-import Pacman.Space.Entities.PacStates.SneakyState;
-import Pacman.Space.Entities.PacStates.SuperState;
+import Pacman.Space.Entities.PacStates.*;
 import Pacman.Space.GameSpace;
 import Pacman.Space.GridElements.Gate;
 import Pacman.Space.GridElements.GridElement;
@@ -32,8 +29,9 @@ public class GameView extends JPanel implements SpaceObserver{
     private final static Color COLOR_PACMAN_NORMAL = Color.YELLOW;
     private final static Color COLOR_PACMAN_SNEAKY = Color.getHSBColor(0.16f, 0.68f, 0.86f);
     private final static Color COLOR_PACMAN_SUPER = Color.ORANGE;
-    private final static Color COLOR_GHOST_NORMAL = Color.GREEN;
+    private final static Color COLOR_GHOST_NORMAL = Color.getHSBColor(0.375f, 0.65f, 0.50f);
     private final static Color COLOR_GHOST_WEAK = Color.getHSBColor(0.19f, 0.68f, 0.61f);
+    private final static Color COLOR_GHOST_FACE = Color.WHITE;
     private final static Color COLOR_GUM_NORMAL = Color.WHITE;
     private final static Color COLOR_GUM_SNEAKY = Color.MAGENTA;
     private final static Color COLOR_GUM_SUPER = Color.ORANGE;
@@ -47,6 +45,8 @@ public class GameView extends JPanel implements SpaceObserver{
     private Color currentGhostColor;
     private Area pacmanShapeClosed;
     private Area pacmanShapeOpen;
+    private Area ghostMainShape;
+    private Area ghostFaceShape;
 
     // GetSet
 
@@ -83,6 +83,7 @@ public class GameView extends JPanel implements SpaceObserver{
 
         // Generation des formes
         generatePacmanShapes();
+        generateGhostShapes();
 
     }
 
@@ -178,14 +179,23 @@ public class GameView extends JPanel implements SpaceObserver{
     private void drawEntities(Graphics2D g) {
 
         // Ghosts
-        g.setColor(currentGhostColor);
-        for(Ghost ghost : space.getGhosts())
-            g.fillOval(
-                    (int) (ghost.getPosition()[0] - GameSpace.TILE_SIZE_HALF + (GameSpace.TILE_SIZE / 5)) * SCALE,
-                    (int) (ghost.getPosition()[1] - GameSpace.TILE_SIZE_HALF + (GameSpace.TILE_SIZE / 5)) * SCALE,
-                    GameSpace.TILE_SIZE * 3/5 * SCALE,
-                    GameSpace.TILE_SIZE * 3/5 * SCALE);
+        for(Ghost ghost : space.getGhosts()){
 
+            // Position
+            int x = (int)(ghost.getPosition()[0]) * SCALE;
+            int y = (int)(ghost.getPosition()[1]) * SCALE;
+            g.translate(x, y);
+
+            // Dessin
+            g.setColor(currentGhostColor);
+            g.fill(ghostMainShape);
+            g.setColor(COLOR_GHOST_FACE);
+            g.fill(ghostFaceShape);
+
+            // Rollback
+            g.translate(-x, -y);
+
+        }
 
         // Pacman
         g.setColor(currentPacmanColor);
@@ -225,7 +235,7 @@ public class GameView extends JPanel implements SpaceObserver{
     }
     @Override
     public void onPacStateChanged(PacState state) {
-        if(state instanceof RegularState) {
+        if(state instanceof RegularState || state instanceof StartState) {
             currentPacmanColor = COLOR_PACMAN_NORMAL;
             currentGhostColor = COLOR_GHOST_NORMAL;
         }
@@ -247,11 +257,11 @@ public class GameView extends JPanel implements SpaceObserver{
        scoreLabel.setScore(newScore);
     }
 
-    // Méthodes de générations des formes appelées dans le constructeur
+    // Méthodes de générations des formes, appelées dans le constructeur
     private void generatePacmanShapes(){
 
         // Body
-        double diametre = GameSpace.TILE_SIZE * 3/5 * SCALE;
+        double diametre = GameSpace.TILE_SIZE * 3f/5 * SCALE;
         pacmanShapeClosed = new Area(new Ellipse2D.Double(
                 -diametre / 2,
                 -diametre / 2,
@@ -265,6 +275,53 @@ public class GameView extends JPanel implements SpaceObserver{
         mouth.addPoint((int) diametre, (int) -diametre);
         mouth.addPoint((int) diametre, (int) diametre);
         pacmanShapeOpen.subtract(new Area(mouth));
+
+    }
+    private void generateGhostShapes(){
+
+        // Head
+        double diametre = GameSpace.TILE_SIZE * 12f/25 * SCALE;
+        ghostMainShape = new Area(new Ellipse2D.Double(
+                -diametre / 2,
+                (-diametre / 2) - (GameSpace.TILE_SIZE * 2f/25 * SCALE),
+                diametre,
+                diametre));
+
+        // Body
+        ghostMainShape.add(new Area(new Rectangle(
+                -GameSpace.TILE_SIZE * 6/25 * SCALE,
+                -GameSpace.TILE_SIZE * 2/25 * SCALE,
+                GameSpace.TILE_SIZE * 12/25 * SCALE,
+                GameSpace.TILE_SIZE * 8/25 * SCALE)));
+
+        // "Tails"
+        java.awt.Polygon tail = new java.awt.Polygon();
+        tail.addPoint(-GameSpace.TILE_SIZE * 6/25 * SCALE, GameSpace.TILE_SIZE * 6/25 * SCALE);
+        tail.addPoint(-GameSpace.TILE_SIZE * 2/25 * SCALE, GameSpace.TILE_SIZE * 6/25 * SCALE);
+        tail.addPoint(-GameSpace.TILE_SIZE * 4/25 * SCALE, GameSpace.TILE_SIZE * 10/25 * SCALE);
+        ghostMainShape.add(new Area(tail));
+        tail.translate(GameSpace.TILE_SIZE * 4/25 * SCALE, 0);
+        ghostMainShape.add(new Area(tail));
+        tail.translate(GameSpace.TILE_SIZE * 4/25 * SCALE, 0);
+        ghostMainShape.add(new Area(tail));
+
+        // Face
+        ghostFaceShape = new Area();
+        ghostFaceShape.add(new Area( new Ellipse2D.Double(
+                -GameSpace.TILE_SIZE * 5f/25 * SCALE,
+                -GameSpace.TILE_SIZE * 3f/25 * SCALE,
+                GameSpace.TILE_SIZE * 4f/25 * SCALE,
+                GameSpace.TILE_SIZE * 4f/25 * SCALE)));
+        ghostFaceShape.add(new Area( new Ellipse2D.Double(
+                GameSpace.TILE_SIZE * 1f/25 * SCALE,
+                -GameSpace.TILE_SIZE * 3f/25 * SCALE,
+                GameSpace.TILE_SIZE * 4f/25 * SCALE,
+                GameSpace.TILE_SIZE * 4f/25 * SCALE)));
+        ghostFaceShape.add(new Area( new Rectangle(
+                -GameSpace.TILE_SIZE * 3/25 * SCALE,
+                GameSpace.TILE_SIZE * 2/25 * SCALE,
+                GameSpace.TILE_SIZE * 6/25 * SCALE,
+                GameSpace.TILE_SIZE * 1/25 * SCALE)));
 
     }
 }
