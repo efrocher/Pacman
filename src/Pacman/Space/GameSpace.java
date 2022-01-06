@@ -31,7 +31,7 @@ public class GameSpace {
     private final Random rng;
     private Pacman pacman;
     private final List<Ghost> ghosts = new ArrayList<Ghost>();
-    private final GridElement[][] grid = new GridElement[TILE_AMOUNT_H][TILE_AMOUNT_V]; // True = passage possible | False = passage impossible
+    private final GridElement[][] grid = new GridElement[TILE_AMOUNT_H][TILE_AMOUNT_V];
     private final List<Gate> gates = new ArrayList<Gate>();
     private final List<SpaceObserver> observers = new ArrayList<SpaceObserver>();
     private int gumAmount;
@@ -175,7 +175,8 @@ public class GameSpace {
         }
     }
     public void addPoints(int points){
-        pacman.addLife(((score + points) / 5000) - (score / 5000));
+        if(score < 5000 && score + points >= 5000)
+            pacman.addLife(1);
         score += points;
         notifyScoreUpdatesSubscribers();
     }

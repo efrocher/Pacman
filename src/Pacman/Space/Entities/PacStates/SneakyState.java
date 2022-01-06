@@ -6,7 +6,7 @@ import Pacman.Space.Entities.Pacman;
 public class SneakyState extends PacState{
 
     // Constantes
-    private static final int DURATION = 10000;
+    private static final int DURATION = 10000; // ms
 
     // Attributs
 

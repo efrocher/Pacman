@@ -33,6 +33,10 @@ public abstract class Entity {
     public void setPositionY(float y){
         position[1] = y;
     }
+    public void setPosition(float position[]){
+        this.position[0] = position[0];
+        this.position[1] = position[1];
+    }
     public Direction getDirection() {
         return direction;
     }
@@ -134,9 +138,14 @@ public abstract class Entity {
 
     }
     public static void checkCollision(Entity entity1, Entity entity2){
-        if(entity1.hitRadius + entity2.hitRadius > Math.sqrt(Math.pow(entity1.position[0] - entity2.position[0], 2) + Math.pow(entity1.position[1] - entity2.position[1], 2))){
+
+        if(entity1.hitRadius + entity2.hitRadius > giveDistance(entity1, entity2)){
             entity1.onEntityCollision(entity2);
             entity2.onEntityCollision(entity1);
         }
+
+    }
+    public static float giveDistance(Entity entity1, Entity entity2){
+        return (float)Math.sqrt(Math.pow(entity1.position[0] - entity2.position[0], 2) + Math.pow(entity1.position[1] - entity2.position[1], 2));
     }
 }

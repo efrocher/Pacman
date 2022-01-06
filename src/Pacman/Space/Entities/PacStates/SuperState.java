@@ -7,7 +7,7 @@ import Pacman.Space.Entities.Pacman;
 public class SuperState extends PacState{
 
     // Constantes
-    private static final int DURATION = 10000;
+    private static final int DURATION = 10000; // ms
 
     // Attributs
 
@@ -27,7 +27,7 @@ public class SuperState extends PacState{
     @Override
     public void behave() {
         checkDuration();
-        pacman.move(1);
+        pacman.move(1.5f);
     }
     @Override
     protected void onOutOfDuration() {

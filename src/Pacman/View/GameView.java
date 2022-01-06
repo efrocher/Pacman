@@ -27,7 +27,7 @@ public class GameView extends JPanel implements SpaceObserver{
     private final static Color COLOR_GAME_BACKGROUND = Color.getHSBColor(0.59f, 0.82f, 0.51f);
     private final static Color COLOR_WALL = Color.BLACK;
     private final static Color COLOR_PACMAN_NORMAL = Color.YELLOW;
-    private final static Color COLOR_PACMAN_SNEAKY = Color.getHSBColor(0.16f, 0.68f, 0.86f);
+    private final static Color COLOR_PACMAN_SNEAKY = Color.getHSBColor(0.16f, 0.35f, 0.86f);
     private final static Color COLOR_PACMAN_SUPER = Color.ORANGE;
     private final static Color COLOR_GHOST_NORMAL = Color.getHSBColor(0.375f, 0.65f, 0.50f);
     private final static Color COLOR_GHOST_WEAK = Color.getHSBColor(0.19f, 0.68f, 0.61f);
@@ -38,9 +38,9 @@ public class GameView extends JPanel implements SpaceObserver{
     private final static Color COLOR_GUM_MAZE = Color.GREEN;
 
     // Attributs
-    private GameSpace space;
-    private ScoreLabel scoreLabel;
-    private LivesLabel livesLabel;
+    private final GameSpace space;
+    private final ScoreLabel scoreLabel;
+    private final LivesLabel livesLabel;
     private Color currentPacmanColor;
     private Color currentGhostColor;
     private Area pacmanShapeClosed;

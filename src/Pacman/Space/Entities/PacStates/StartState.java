@@ -6,7 +6,7 @@ import Pacman.Space.Entities.Pacman;
 public class StartState extends PacState{
 
     // Attributs
-    private static final int DURATION = -1;
+    private static final int DURATION = -1; // ms
 
     // GetSet
 

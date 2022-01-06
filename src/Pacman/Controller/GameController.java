@@ -17,7 +17,6 @@ public class GameController {
     // Attributs
     private GameSpace space;
     private GameView view;
-    private double timeStamp;
 
     // GetSet
 
@@ -31,11 +30,12 @@ public class GameController {
     public void run() throws InterruptedException {
 
         // Déroulement du jeu
-        timeStamp = System.nanoTime() / 1e6;
+        double timeStamp = System.nanoTime() / 1e6;
         while(space.getGumAmount() > 0 && space.getPacman().getLives() > 0){
 
             // Refresh frame
             view.repaint();
+            Thread.sleep(TARGET_TICK_TIME / 5); // Eco CPU
 
             // Logique
             while(System.nanoTime() / 1e6 > timeStamp + TARGET_TICK_TIME){
@@ -43,8 +43,7 @@ public class GameController {
                 // Récupération des entitées
                 List<Entity> entities = new ArrayList<Entity>();
                 entities.add((space.getPacman()));
-                for(Entity e : space.getGhosts())
-                    entities.add(e);
+                entities.addAll(space.getGhosts());
 
                 // Comportement régulier des entités
                 for(Entity e : entities)
@@ -58,7 +57,6 @@ public class GameController {
 
                 // Avancement du timeStamp
                 timeStamp += TARGET_TICK_TIME;
-
             }
         }
 

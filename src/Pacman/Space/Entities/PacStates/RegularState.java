@@ -7,7 +7,7 @@ import Pacman.Space.Entities.Pacman;
 public class RegularState extends PacState {
 
     // Constantes
-    private static final int DURATION = -1;
+    private static final int DURATION = -1; // infini
 
     // Attributs
 

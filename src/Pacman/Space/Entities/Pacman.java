@@ -13,6 +13,7 @@ public class Pacman extends Entity implements InputObserver {
     // Constantes
     private static final float BASE_SPEED = 80f; // px / seconde
     private static final int HIT_RADIUS = 6; // px
+    private static final int BASE_LIVES = 3;
 
     // Attributs
     private int lives;
@@ -34,7 +35,7 @@ public class Pacman extends Entity implements InputObserver {
     public Pacman(float xPos, float yPos, GameSpace space, Direction direction){
         super(xPos, yPos, space, direction, BASE_SPEED, HIT_RADIUS);
         InputManager.subscribe(this);
-        lives = 3;
+        lives = BASE_LIVES;
         state = new StartState(this);
     }
 
@@ -56,8 +57,7 @@ public class Pacman extends Entity implements InputObserver {
             float[] newCrossroad = findNextCrossroad(nextCrossroad, newDirection);
             if(space.tileCrossable(GameSpace.positionToTileCoord(newCrossroad))){
                 setDirection(newDirection);
-                setPositionX(nextCrossroad[0]);
-                setPositionY(nextCrossroad[1]);
+                setPosition(nextCrossroad);
                 nextCrossroad = newCrossroad;
                 InputManager.clearLastInput();
                 return false;
@@ -78,7 +78,7 @@ public class Pacman extends Entity implements InputObserver {
             space.setPacmanStartedMoving(true);
         }
 
-        // Changement de direction
+        // Changement de direction (demi-tour uniquement)
         if(newDirection != null && newDirection.ordinal() == (direction.ordinal() + 2) % 4){
             float[] newCrossroad = findNextCrossroad(getPosition(), newDirection);
             if(space.tileCrossable(GameSpace.positionToTileCoord(newCrossroad))){
