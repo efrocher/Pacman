@@ -3,6 +3,7 @@ package Pacman.GameSpace.Entities.States.PacStates;
 import Pacman.GameSpace.Entities.Entity;
 import Pacman.GameSpace.Entities.Pacman;
 
+// État de pacman à l'arrêt (avant que la partie commence ou après être mort)
 public class PacState_Waiting extends PacState{
 
     /// --- Attributs --- ///

@@ -7,6 +7,7 @@ import Pacman.GameSpace.GridElements.Gate;
 import Pacman.GameSpace.GridElements.GridElement;
 import Pacman.GameSpace.GridElements.Gums.*;
 import Pacman.GameSpace.GridElements.Wall;
+import Pacman.GameSpace.SpaceObserver;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,25 +15,33 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 
-public class GameView extends JPanel implements SpaceObserver{
+// Classe gérant l'affichage du jeu
+public class GameView extends JPanel implements SpaceObserver {
 
     /// --- Constantes --- ///
     public final static int SCALE = 2;
     public final static int HUD_HEIGHT = GameSpace.TILE_SIZE; // px
     public final static Dimension HUD_LABEL_DIMENSION = new Dimension(GameSpace.TILE_SIZE * 5 * SCALE, HUD_HEIGHT * 3/5 * SCALE);
+    public final static Dimension HUD_START_LABEL_DIMENSION = new Dimension(GameSpace.TILE_SIZE * 10 * SCALE, HUD_HEIGHT * SCALE);
     public final static int[] SCORE_LABEL_POSITION = new int[] {GameSpace.TILE_SIZE * SCALE, HUD_HEIGHT / 5 * SCALE};
     public final static int[] LIVES_LABEL_POSITION = new int[] {(GameSpace.TILE_SIZE * SCALE) + HUD_LABEL_DIMENSION.width, HUD_HEIGHT / 5 * SCALE};
+    public final static int[] START_LABEL_POSITION = new int[] {(GameSpace.WIDTH / 2 * SCALE) - (HUD_START_LABEL_DIMENSION.width / 2), (GameSpace.HEIGHT / 2 * SCALE)};
     private final static Color COLOR_HUD = Color.WHITE;
+    private final static Color COLOR_HUD_STARTLABEL = Color.RED;
     private final static Color COLOR_BACKGROUND = Color.BLACK;
-    private final static Color COLOR_GAME_BACKGROUND = Color.getHSBColor(0.59f, 0.82f, 0.51f);
-    private final static Color COLOR_WALL = Color.BLACK;
+    //private final static Color COLOR_GAME_BACKGROUND = Color.getHSBColor(0.59f, 0.82f, 0.51f);
+    private final static Color COLOR_GAME_BACKGROUND = Color.BLACK;
+    //private final static Color COLOR_WALL = Color.BLACK;
+    private final static Color COLOR_WALL = Color.getHSBColor(0.63f, 0.90f, 0.50f);
     private final static Color COLOR_PACMAN_NORMAL = Color.YELLOW;
     private final static Color COLOR_PACMAN_SNEAKY = Color.getHSBColor(0.16f, 0.35f, 0.86f);
     private final static Color COLOR_PACMAN_SUPER = Color.ORANGE;
     private final static Color COLOR_GHOST_NORMAL = Color.getHSBColor(0.375f, 0.65f, 0.50f);
-    private final static Color COLOR_GHOST_WEAK = Color.getHSBColor(0.19f, 0.68f, 0.61f);
+    //private final static Color COLOR_GHOST_WEAK = Color.getHSBColor(0.19f, 0.68f, 0.61f);
+    private final static Color COLOR_GHOST_WEAK = Color.getHSBColor(0.59f, 0.82f, 0.65f);
     private final static Color COLOR_GHOST_FACE = Color.WHITE;
-    private final static Color COLOR_GUM_NORMAL = Color.WHITE;
+    //private final static Color COLOR_GUM_NORMAL = Color.WHITE;
+    private final static Color COLOR_GUM_NORMAL = Color.getHSBColor(0.59f, 0.62f, 0.81f);
     private final static Color COLOR_GUM_SNEAKY = Color.MAGENTA;
     private final static Color COLOR_GUM_SUPER = Color.ORANGE;
     private final static Color COLOR_GUM_MAZE = Color.GREEN;
@@ -41,6 +50,7 @@ public class GameView extends JPanel implements SpaceObserver{
     private final GameSpace space;
     private final ScoreLabel scoreLabel;
     private final LivesLabel livesLabel;
+    private final JLabel startLabel;
     private Color currentPacmanColor;
     private Color currentGhostColor;
     private Area pacmanShapeClosed;
@@ -69,6 +79,15 @@ public class GameView extends JPanel implements SpaceObserver{
         currentGhostColor = COLOR_GHOST_NORMAL;
 
         // Labels
+        startLabel = new JLabel("PUSH ANY DIRECTION TO START", SwingConstants.CENTER);
+        startLabel.setForeground(COLOR_HUD);
+        startLabel.setOpaque(true);
+        startLabel.setBackground(COLOR_BACKGROUND);
+        startLabel.setLocation(START_LABEL_POSITION[0], START_LABEL_POSITION[1]);
+        startLabel.setSize(HUD_START_LABEL_DIMENSION);
+        startLabel.setFont(new Font("Dialog", Font.PLAIN, GameView.HUD_START_LABEL_DIMENSION.height * 3/5));
+        add(startLabel);
+
         scoreLabel = new ScoreLabel(COLOR_HUD);
         scoreLabel.setScore(space.getScore());
         scoreLabel.setLocation(SCORE_LABEL_POSITION[0], SCORE_LABEL_POSITION[1]);
@@ -213,16 +232,10 @@ public class GameView extends JPanel implements SpaceObserver{
         if(System.currentTimeMillis() % 400 > 200){
             AffineTransform transform = new AffineTransform();
             Area pacmanShapeOpenRotated = (Area)pacmanShapeOpen.clone();
-            switch (space.getPacman().getDirection()){
-                case UP:
-                    transform.rotate(Math.PI + Math.PI/2);
-                    break;
-                case DOWN:
-                    transform.rotate(Math.PI/2);
-                    break;
-                case LEFT:
-                    transform.rotate(Math.PI);
-                    break;
+            switch (space.getPacman().getDirection()) {
+                case UP     -> transform.rotate(Math.PI + Math.PI / 2);
+                case DOWN   -> transform.rotate(Math.PI / 2);
+                case LEFT   -> transform.rotate(Math.PI);
             }
             pacmanShapeOpenRotated.transform(transform);
             g.fill(pacmanShapeOpenRotated);
@@ -235,7 +248,7 @@ public class GameView extends JPanel implements SpaceObserver{
     }
     @Override
     public void onGameStarted() {
-        // Todo
+        remove(startLabel);
     }
     @Override
     public void onPacStateChanged(PacState state) {
@@ -261,7 +274,7 @@ public class GameView extends JPanel implements SpaceObserver{
        scoreLabel.setScore(newScore);
     }
 
-    /// --- Méthodes --- /// de générations des formes, appelées dans le constructeur
+    /// --- Méthodes de générations des formes, appelées dans le constructeur --- ///
     private void generatePacmanShapes(){
 
         // Body

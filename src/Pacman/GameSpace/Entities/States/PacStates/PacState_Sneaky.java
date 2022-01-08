@@ -3,6 +3,7 @@ package Pacman.GameSpace.Entities.States.PacStates;
 import Pacman.GameSpace.Entities.Entity;
 import Pacman.GameSpace.Entities.Pacman;
 
+// État de pacman lui permettant d'ingorer les fantômes
 public class PacState_Sneaky extends PacState{
 
     /// --- Constantes --- ///

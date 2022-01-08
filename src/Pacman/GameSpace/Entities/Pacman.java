@@ -3,13 +3,14 @@ package Pacman.GameSpace.Entities;
 import Pacman.GameSpace.Entities.States.PacStates.*;
 import Pacman.GameSpace.GameSpace;
 import Pacman.Inputs.InputManager;
-import Pacman.View.InputObserver;
-import Pacman.View.SpaceObserver;
+import Pacman.Inputs.InputObserver;
+import Pacman.GameSpace.SpaceObserver;
 
+// Classe représentant pacman
 public class Pacman extends Entity implements InputObserver {
 
     /// --- Constantes --- ///
-    private static final float BASE_SPEED = 80f; // px / seconde
+    private static final float BASE_SPEED = 100f; // px / seconde
     private static final int HIT_RADIUS = 6; // px
     private static final int BASE_LIVES = 3;
 
@@ -58,16 +59,33 @@ public class Pacman extends Entity implements InputObserver {
     @Override
     protected boolean onCrossroad() {
 
+        // Super
         super.onCrossroad();
 
-        Direction newDirection = InputManager.getLastInput();
-        if(newDirection != null && newDirection != getDirection() && ((System.nanoTime() - InputManager.getLastInputTimestamp()) / 1e6) < 500){
+        // Récupération du dernier input de direction
+        Direction newDirection = InputManager.getLastDirectionInput();
+
+        // Si il y a une direction, qu'elle est différente de l'actuelle et qu'elle n'est pas trop ancienne (<500ms)
+        if(newDirection != null && newDirection != getDirection() && ((System.nanoTime() - InputManager.getLastDirectionInputTimestamp()) / 1e6) < 500){
+
+            // Recherche du prochain croisement dans cette nouvelle direction
             float[] newCrossroad = findNextCrossroad(nextCrossroad, newDirection);
+
+            // Si la tile est traversable
             if(space.tileCrossable(GameSpace.positionToTileCoord(newCrossroad))){
+
+                // Nouvelle direction
                 setDirection(newDirection);
+
+                // Centrage sur le croisement que l'on vient de traverser
                 setPosition(nextCrossroad);
+
+                // Prochain croisement
                 nextCrossroad = newCrossroad;
-                InputManager.clearLastInput();
+
+                // Le dernier input est "consommé"
+                InputManager.clearLastDirectionInput();
+
                 return false;
             }
         }
@@ -77,11 +95,11 @@ public class Pacman extends Entity implements InputObserver {
     protected void onEntityCollision(Entity otherEntity) {
         state.onEntityCollision(otherEntity);
     }
-    @Override
+    // Méthode appelée quand une direction est préssée
     public void onNewDirectionInput(Direction newDirection) {
         state.onNewDirectionInput(newDirection);
     }
-    // Changement de direction (demi-tour uniquement)
+    // Méthode gérant la possibilité de faire demi-tour quand une direction est pressée
     public void tryChangeDirection(Direction newDirection){
 
         if(newDirection != null && newDirection.ordinal() == (getDirection().ordinal() + 2) % 4){
@@ -89,7 +107,7 @@ public class Pacman extends Entity implements InputObserver {
             if(space.tileCrossable(GameSpace.positionToTileCoord(newCrossroad))){
                 setDirection(newDirection);
                 nextCrossroad = newCrossroad;
-                InputManager.clearLastInput();
+                InputManager.clearLastDirectionInput();
             }
         }
 
@@ -101,14 +119,17 @@ public class Pacman extends Entity implements InputObserver {
         notifyLivesChanged();
         state = new PacState_Waiting(this);
     }
+    // Méthode permettant d'ajouter un nombre donné de vies
     public void addLife(int lives){
         this.lives += lives;
         notifyLivesChanged();
     }
+    // Méthode notifiant les observateurs que le nombre de vies a changé
     private void notifyLivesChanged(){
         for(SpaceObserver o : space.getObservers())
             o.onLivesChanged(lives);
     }
+    // Méthode notifiant les observateurs que l'état de pacman a changé
     private void notifyPacStateChanged(){
         for(SpaceObserver o : space.getObservers())
             o.onPacStateChanged(state);

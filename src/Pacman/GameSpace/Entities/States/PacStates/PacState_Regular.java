@@ -4,6 +4,7 @@ import Pacman.GameSpace.Entities.Entity;
 import Pacman.GameSpace.Entities.Ghost;
 import Pacman.GameSpace.Entities.Pacman;
 
+// État normal de pacman
 public class PacState_Regular extends PacState {
 
     /// --- Constantes --- ///

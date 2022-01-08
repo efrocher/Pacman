@@ -3,6 +3,7 @@ package Pacman.View;
 import javax.swing.*;
 import java.awt.*;
 
+// Classe correspondant au label d'affichage du score
 public class ScoreLabel extends JLabel {
 
     /// --- Attributs --- ///

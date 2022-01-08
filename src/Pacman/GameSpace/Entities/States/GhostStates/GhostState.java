@@ -1,9 +1,10 @@
 package Pacman.GameSpace.Entities.States.GhostStates;
 
 import Pacman.GameSpace.Entities.Ghost;
-import Pacman.GameSpace.Entities.States.EntitySate;
+import Pacman.GameSpace.Entities.States.EntityState;
 
-public abstract class GhostState extends EntitySate {
+// Classe abstraite représentant l'état un fantôme
+public abstract class GhostState extends EntityState {
 
     /// --- Constantes --- ///
     public static final int REGULAR = 0;
@@ -22,9 +23,5 @@ public abstract class GhostState extends EntitySate {
     }
 
     /// --- Méthodes --- ///
-    @Override
-    public void behave(){
-        super.behave();
-    }
 
 }

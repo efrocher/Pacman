@@ -3,6 +3,7 @@ package Pacman.GameSpace.Entities.States.GhostStates;
 import Pacman.GameSpace.Entities.Entity;
 import Pacman.GameSpace.Entities.Ghost;
 
+// État normal d'un fantôme
 public class GhostState_Regular extends GhostState{
 
     /// --- Constantes --- ///

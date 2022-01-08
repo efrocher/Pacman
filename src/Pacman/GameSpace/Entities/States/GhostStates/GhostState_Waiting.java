@@ -3,6 +3,7 @@ package Pacman.GameSpace.Entities.States.GhostStates;
 import Pacman.GameSpace.Entities.Entity;
 import Pacman.GameSpace.Entities.Ghost;
 
+// État d'un fantôme à l'arrêt (avant le début de la partie)
 public class GhostState_Waiting extends GhostState{
 
     /// --- Constantes --- ///

@@ -2,7 +2,8 @@ package Pacman.GameSpace.Entities.States;
 
 import Pacman.GameSpace.Entities.Entity;
 
-public abstract class EntitySate {
+// Classe abstraite représentant l'état d'une entité
+public abstract class EntityState {
 
     /// --- Attributs --- ///
     private final int duration; // ms, -1 pour infini
@@ -11,12 +12,14 @@ public abstract class EntitySate {
     /// --- GetSet --- ///
 
     //// --- Constructeurs --- /// ///
-    public EntitySate(int duration) {
+    public EntityState(int duration) {
         this.duration = duration;
         this.startTimeStamp = System.nanoTime();
     }
 
     /// --- Méthodes --- ///
+    // Méthode appelé par l'entité et effectuant le comportement correspondant à l'état
+    // Doit être appelée par super.behave() en cas d'override
     public void behave(){
         if(duration > -1 && (System.nanoTime() - startTimeStamp) / 1e6 > duration)
             onOutOfDuration();

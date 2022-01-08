@@ -5,6 +5,7 @@ import Pacman.GameSpace.Entities.Ghost;
 import Pacman.GameSpace.Entities.Pacman;
 import Pacman.GameSpace.Entities.States.GhostStates.GhostState;
 
+// État de pacman lui permettant de manger les fantômes
 public class PacState_Super extends PacState{
 
     /// --- Constantes --- ///

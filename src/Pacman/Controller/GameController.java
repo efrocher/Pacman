@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// Classe gérant le lacement, le déroulement et la fin de la partie
+// Ne se charge d'appeler que les évènements logiques récurents
 public class GameController {
 
     /// --- Constantes --- ///
@@ -27,6 +29,7 @@ public class GameController {
     }
 
     /// --- Méthodes --- ///
+    // Boucle déclenchant la logique du jeu
     public void run() throws InterruptedException {
 
         // Déroulement du jeu
@@ -61,6 +64,7 @@ public class GameController {
         }
 
         // Fin
+        view.repaint();
         String endMessage;
         if(space.getPacman().getLives() <= 0)
             endMessage = "Défaite...";

@@ -6,9 +6,11 @@ import Pacman.Inputs.InputManager;
 
 import java.util.Arrays;
 
+// Classe abstraite représentant une entité :
+// un personnage capable de se déplacer dans le labyrinthe
 public abstract class Entity {
 
-    // Enum
+    /// --- Enum --- ///
     public enum Direction{
         UP, LEFT, DOWN, RIGHT
     }
@@ -45,6 +47,9 @@ public abstract class Entity {
     }
     protected void setDirection(Direction direction){
         this.direction = direction;
+
+        // Calcul de l'axe et de la directions dans l'axe
+        // Ces valeurs sont utilisées pour faciliter les des déplacements et changements de direction
         if(direction == Direction.LEFT || direction == Direction.RIGHT)
             axis = 0;
         else
@@ -66,7 +71,9 @@ public abstract class Entity {
     }
 
     /// --- Méthodes --- ///
+    // Comportement de l'entité
     public abstract void behave();
+    // Déplacement de l'entité
     public void move(float speedModifier){
 
         // Var
@@ -76,12 +83,17 @@ public abstract class Entity {
         position[axis] += speed * speedModifier * directionInAxis * GameController.DELTA;
         GameSpace.wrapPosition(position, axis);
 
-        // Dépassement d'un croisement
+        // Si on a dépassé le prochain croisement, et que l'on a décidé de poursuivre tout droit
         if(position[axis] * directionInAxis >= nextCrossroad[axis] * directionInAxis && onCrossroad()){
+
+            // Recherche du croisement suivant
             float[] newCrossroad = Entity.findNextCrossroad(position, direction);
+
+            // Si la tile suivante est traversable, on poursuit
             if(space.tileCrossable(GameSpace.positionToTileCoord(newCrossroad)))
                 nextCrossroad = newCrossroad;
-            else { // Si le prochain croisement est invalide, l'entité est roll back au croisement précédent
+            // Si non, retour au centre de la tile actuelle et collision avec le mur
+            else {
                 nextCrossroad[axis] = newCrossroad[axis] - (directionInAxis * GameSpace.TILE_SIZE);
                 setPositionX(nextCrossroad[0]);
                 setPositionY(nextCrossroad[1]);
@@ -89,32 +101,47 @@ public abstract class Entity {
             }
         }
     }
+    // Méthode appelée quand l'entité tente d'entrer dans une tile qui n'est pas traversable
     protected abstract void onRoadBlock();
+    // Méthode appelée quand l'entité traverse le milieu d'une tile
+    // Retourne true si l'entité a choisi de poursuivre son mouvement dans la même direction
     protected boolean onCrossroad(){
         space.cross(this, GameSpace.positionToTileCoord(nextCrossroad));
         return true;
     }
+    // Méthode appelée quand l'entité entre en collision avec une autre entité
     protected abstract void onEntityCollision(Entity otherEntity);
+    // Méthode déplaçant l'entité à une position donnée avec une certaine direction
     public void relocate(float[] newPosition, Direction direction){
         position[0] = newPosition[0];
         position[1] = newPosition[1];
         setDirection(direction);
         nextCrossroad = GameSpace.tileCoordToPosition(GameSpace.positionToTileCoord(getPosition()));
-        InputManager.clearLastInput();
+        InputManager.clearLastDirectionInput();
     }
+    // Méthode appelée quand l'entité est tuée
     public abstract void die();
 
-    /// --- Méthodes --- /// statiques
+    /// --- Méthodes statiques --- ///
+    // Méthode permettant de trouver le prochain milieu de tile (croisement)
+    // que croiserait une entité si elle partait d'une position donnée dans une direction donnée.
+    // Probablement peu éfficient mais ça marche et j'ai pas le temps de faire mieux ¯\_(ツ)_/¯
+    // Todo : optimiser
     protected static float[] findNextCrossroad(float[] position, Direction direction){
 
-        // Prep
+        // Vars
         int axis;
         int directionInAxis;
         int positionInAxis;
+
+        // Récupération de l'axe
         if(direction == Direction.LEFT || direction == Direction.RIGHT)
             axis = 0;
         else
             axis = 1;
+
+        // Récupération de la direction dans l'axe
+        // + arrondi de la position au pixel près dans la bonne direction
         if(direction == Direction.LEFT || direction == Direction.UP){
             directionInAxis = -1;
             positionInAxis = (int)Math.floor(position[axis]);
@@ -124,22 +151,23 @@ public abstract class Entity {
             directionInAxis = 1;
         }
 
-
-        // Process
+        // Recherche du prochain croisement pixel par pixel
         do{
             positionInAxis += directionInAxis;
         } while (Math.abs(positionInAxis % GameSpace.TILE_SIZE) != GameSpace.TILE_SIZE_HALF);
-        if(positionInAxis < 0)
-            positionInAxis += GameSpace.DIMENTION[axis];
-        else if(positionInAxis >= GameSpace.DIMENTION[axis])
-            positionInAxis -= GameSpace.DIMENTION[axis];
 
-        // Retour
+        // Construction de la coordonnée à retourner
         float[] crossRoadposition = Arrays.copyOf(position, 2);
         crossRoadposition[axis] = positionInAxis;
+
+        // Wrap de la coordonnée (gestion de la sortie d'écran)
+        GameSpace.wrapPosition(crossRoadposition, axis);
+
+        // Retour
         return crossRoadposition;
 
     }
+    // Méthode verifiant la collision de deux entité
     public static void checkCollision(Entity entity1, Entity entity2){
 
         if(entity1.hitRadius + entity2.hitRadius > giveDistance(entity1, entity2)){
@@ -148,6 +176,7 @@ public abstract class Entity {
         }
 
     }
+    // Retourne la distance entre deux entités
     public static float giveDistance(Entity entity1, Entity entity2){
         return (float)Math.sqrt(Math.pow(entity1.position[0] - entity2.position[0], 2) + Math.pow(entity1.position[1] - entity2.position[1], 2));
     }

@@ -4,6 +4,7 @@ import Pacman.GameSpace.Entities.Entity;
 import Pacman.GameSpace.Entities.Ghost;
 import Pacman.GameSpace.Entities.Pacman;
 
+// État d'un fantôme pendant que pacman est super-pacman
 public class GhostState_Afraid extends GhostState{
 
     /// --- Constantes --- ///

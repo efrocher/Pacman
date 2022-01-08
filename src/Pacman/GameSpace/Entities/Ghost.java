@@ -8,10 +8,11 @@ import Pacman.GameSpace.GameSpace;
 
 import java.util.Random;
 
+// Classe représentant un fantôme
 public class Ghost extends Entity {
 
     /// --- Constantes --- ///
-    private static final float BASE_SPEED = 80f; // px / seconde
+    private static final float BASE_SPEED = 100f; // px / seconde
     private static final int HIT_RADIUS = 6; // px
 
     /// --- Attributs --- ///
@@ -49,8 +50,12 @@ public class Ghost extends Entity {
     @Override
     protected void onRoadBlock() {
 
+        // Vars
         Direction newDirection;
         float[] newCrossroad;
+
+        // Recherche d'une nouvelle direction dans un axe différent et dans laquelle il est possible d'avancer
+        // Todo : optimiser
         do{
             newDirection = Direction.values()[rng.nextInt(4)];
             newCrossroad = findNextCrossroad(getPosition(), newDirection);
@@ -70,6 +75,6 @@ public class Ghost extends Entity {
     }
     @Override
     public void die() {
-        relocate(GameSpace.tileCoordToPosition(space.SPAWN_GHOST), Direction.UP);
+        relocate(GameSpace.tileCoordToPosition(GameSpace.SPAWN_GHOST), Direction.UP);
     }
 }

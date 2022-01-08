@@ -1,7 +1,8 @@
-package Pacman.View;
+package Pacman.GameSpace;
 
 import Pacman.GameSpace.Entities.States.PacStates.PacState;
 
+// Interface implémentée par les objets souhaitant être notifiés des évolution de l'espace de jeu
 public interface SpaceObserver {
 
     /// --- Méthodes --- ///

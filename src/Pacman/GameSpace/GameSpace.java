@@ -8,12 +8,13 @@ import Pacman.GameSpace.GridElements.Gate;
 import Pacman.GameSpace.GridElements.GridElement;
 import Pacman.GameSpace.GridElements.Gums.*;
 import Pacman.GameSpace.GridElements.Wall;
-import Pacman.View.SpaceObserver;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+// Classe représentant l'espace de jeu
+// Contient le labyrinthe et tous les éléments qui y évoluent
 public class GameSpace {
 
     /// --- Constantes --- ///
@@ -89,36 +90,34 @@ public class GameSpace {
         gumAmount = 0;
         for (int x = 0; x < TILE_AMOUNT_H; x++)
             for (int y = 0; y < TILE_AMOUNT_V; y++)
-                switch (dummyGrid[y][x]){
-                    case 1:
-                        grid[x][y] = new Wall();
-                        break;
-                    case 2:
-                        grid[x][y] = new NormalGum(new int[] {x, y}, this);
+                switch (dummyGrid[y][x]) {
+                    case 1 -> grid[x][y] = new Wall();
+                    case 2 -> {
+                        grid[x][y] = new NormalGum(new int[]{x, y}, this);
                         gumAmount++;
-                        break;
-                    case 3:
-                        grid[x][y] = new SuperGum(new int[] {x, y}, this);
+                    }
+                    case 3 -> {
+                        grid[x][y] = new SuperGum(new int[]{x, y}, this);
                         gumAmount++;
-                        break;
-                    case 4:
-                        grid[x][y] = new MazeGum(new int[] {x, y}, this);
+                    }
+                    case 4 -> {
+                        grid[x][y] = new MazeGum(new int[]{x, y}, this);
                         gumAmount++;
-                        break;
-                    case  5:
-                        grid[x][y] = new SneakyGum(new int[] {x, y}, this);
+                    }
+                    case 5 -> {
+                        grid[x][y] = new SneakyGum(new int[]{x, y}, this);
                         gumAmount++;
-                        break;
-                    case 6:
+                    }
+                    case 6 -> {
                         Gate gOpen = new Gate(true);
                         grid[x][y] = gOpen;
                         gates.add(gOpen);
-                        break;
-                    case 7:
+                    }
+                    case 7 -> {
                         Gate gClosed = new Gate(false);
                         grid[x][y] = gClosed;
                         gates.add(gClosed);
-                        break;
+                    }
                 }
 
         // Pacman.Space.Entities.Pacman
@@ -133,6 +132,7 @@ public class GameSpace {
     }
 
     /// --- Méthodes --- ///
+    // Méthode créant et plaçant pacman au hasard
     private void createAndRandomlyPlacePacman(){
 
         int[] tileCoord = new int[2];
@@ -143,6 +143,7 @@ public class GameSpace {
         pacman = new Pacman((tileCoord[0] * TILE_SIZE) + TILE_SIZE_HALF, (tileCoord[1] * TILE_SIZE) + TILE_SIZE_HALF, this, Entity.Direction.RIGHT);
 
     }
+    // Méthode créant et plaçant les fantômes au hasard
     private void createAndRandomlyPlaceGhosts(){
 
         int[] tileCoord = new int[2];
@@ -155,9 +156,11 @@ public class GameSpace {
         }
 
     }
+    // Méthode retournant true si la tile est traversable
     public boolean tileCrossable(int[] tileCoord){
         return grid[tileCoord[0]][tileCoord[1]] == null || grid[tileCoord[0]][tileCoord[1]].isCrosseable();
     }
+    // Méthode effectuant toutes les actions liées au commencement de la partie
     public void startGame(){
         if(!gameBegun){
 
@@ -173,36 +176,43 @@ public class GameSpace {
                 o.onGameStarted();
         }
     }
+    // Méthode déclenchant le fait d'être traversé par une entité pour l'élément du labyrinthe correspondant
     public void cross(Entity crossingEntity, int[] tileCrossed){
         if(grid[tileCrossed[0]][tileCrossed[1]] != null)
             grid[tileCrossed[0]][tileCrossed[1]].onCrossed(crossingEntity);
     }
+    // Suppression d'une pacgomme du labyrinthe
     public void removeGumAtCoordinate(int[] tileCoord){
         if(grid[tileCoord[0]][tileCoord[1]] instanceof Gum){
             grid[tileCoord[0]][tileCoord[1]] = null;
             gumAmount--;
         }
     }
+    // Ajout de points
     public void addPoints(int points){
         if(score < 5000 && score + points >= 5000)
             pacman.addLife(1);
         score += points;
         notifyScoreUpdatesSubscribers();
     }
+    // Changement de l'état des éléments portes
     public void swapGates(){
         for (Gate g : gates)
             g.swap();
     }
+    // Méthode permettant aux observateurs de s'abonner pour recevoir les notifications de changement d'état
     public int subscribe(SpaceObserver observer){
         observers.add(observer);
         return score;
     }
+    // Méthode notifiant les observateurs du changement du score
     private void notifyScoreUpdatesSubscribers(){
         for(SpaceObserver o : observers)
             o.onScoreChanged(score);
     }
 
-    /// --- Méthodes --- /// statiques
+    /// --- Méthodes statiques --- ///
+    // Méthodes convertissant une position en une coordonnée de tile dans le labyrinthe
     public static int[] positionToTileCoord(float[] position){
         return new int[] {(int)position[0] / TILE_SIZE, (int)position[1] / TILE_SIZE};
     }
@@ -212,6 +222,7 @@ public class GameSpace {
     public static int positionToTileCoord(float position){
         return (int)position / TILE_SIZE;
     }
+    // Méthodes convertissant une coordonnée de tile dans le labyrinthe en position (centre de la tile)
     public static float[] tileCoordToPosition(int[] tileCoord){
         return new float[] {(tileCoord[0] * TILE_SIZE) + TILE_SIZE_HALF, (tileCoord[1] * TILE_SIZE) + TILE_SIZE_HALF};
     }
@@ -221,6 +232,7 @@ public class GameSpace {
     public static float tileCoordToPosition(int tileCoord){
         return (tileCoord * TILE_SIZE) + TILE_SIZE_HALF;
     }
+    // Méthode gérant l'overflow/underflow d'une position (gestion des sortie d'écran)
     public static void wrapPosition(float[] position, int axis){
 
         if (position[axis] < 0)

@@ -3,6 +3,7 @@ package Pacman.View;
 import javax.swing.*;
 import java.awt.*;
 
+// Classe correspondant au label d'affichage du nombre de vies
 public class LivesLabel extends JLabel {
 
     /// --- Attributs --- ///

@@ -1,10 +1,11 @@
 package Pacman.GameSpace.Entities.States.PacStates;
 
 import Pacman.GameSpace.Entities.Entity;
-import Pacman.GameSpace.Entities.States.EntitySate;
+import Pacman.GameSpace.Entities.States.EntityState;
 import Pacman.GameSpace.Entities.Pacman;
 
-public abstract class PacState extends EntitySate {
+// Classe abstraite représentant l'état de pacman
+public abstract class PacState extends EntityState {
 
     /// --- Constantes --- ///
     public static final int REGULAR = 0;
@@ -25,11 +26,8 @@ public abstract class PacState extends EntitySate {
 
     /// --- Méthodes --- ///
     @Override
-    public void behave(){
-        super.behave();
-    }
-    @Override
     public abstract int stateId();
+    // Méthode appelée quand une direction est préssée
     public void onNewDirectionInput(Entity.Direction newDirection){
         pacman.tryChangeDirection(newDirection);
     }
