@@ -1,7 +1,7 @@
 package Pacman.Controller;
 
-import Pacman.Space.Entities.Entity;
-import Pacman.Space.GameSpace;
+import Pacman.GameSpace.Entities.Entity;
+import Pacman.GameSpace.GameSpace;
 import Pacman.View.GameView;
 
 import javax.swing.*;
@@ -10,23 +10,23 @@ import java.util.List;
 
 public class GameController {
 
-    // Constantes
+    /// --- Constantes --- ///
     public static final int TARGET_TICK_TIME = 20; // ms
     public static final float DELTA = TARGET_TICK_TIME / 1000f;
 
-    // Attributs
+    /// --- Attributs --- ///
     private GameSpace space;
     private GameView view;
 
-    // GetSet
+    /// --- GetSet --- ///
 
-    // Constructeurs
+    /// --- Constructeurs --- ///
     public GameController(GameSpace gameSpace, GameView view){
         this.space = gameSpace;
         this.view = view;
     }
 
-    // Méthodes
+    /// --- Méthodes --- ///
     public void run() throws InterruptedException {
 
         // Déroulement du jeu

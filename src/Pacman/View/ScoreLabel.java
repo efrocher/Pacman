@@ -1,18 +1,16 @@
 package Pacman.View;
 
-import Pacman.Space.GameSpace;
-
 import javax.swing.*;
 import java.awt.*;
 
 public class ScoreLabel extends JLabel {
 
-    // Attributs
+    /// --- Attributs --- ///
     private static final String BASE_TEXT = "SCORE : ";
 
-    // GetSet
+    /// --- GetSet --- ///
 
-    // Constructeurs
+    /// --- Constructeurs --- ///
     public ScoreLabel(Color color) {
 
         super();
@@ -23,7 +21,7 @@ public class ScoreLabel extends JLabel {
 
     }
 
-    // Méthodes
+    /// --- Méthodes --- ///
     public void setScore(int score){
         setText(BASE_TEXT + score);
     }

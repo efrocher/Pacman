@@ -1,10 +1,10 @@
 package Pacman.View;
 
-import Pacman.Space.Entities.Entity;
+import Pacman.GameSpace.Entities.Entity;
 
 public interface InputObserver {
 
-    // Méthodes
-    void onNewInput(Entity.Direction input);
+    /// --- Méthodes --- ///
+    void onNewDirectionInput(Entity.Direction input);
 
 }

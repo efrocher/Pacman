@@ -1,7 +1,7 @@
 import Pacman.Controller.GameController;
-import Pacman.Space.GameSpace;
+import Pacman.GameSpace.GameSpace;
 import Pacman.View.GameView;
-import Pacman.View.InputManager;
+import Pacman.Inputs.InputManager;
 
 import javax.swing.*;
 import java.util.Random;

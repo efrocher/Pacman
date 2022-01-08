@@ -1,12 +1,12 @@
 package Pacman.View;
 
-import Pacman.Space.Entities.Ghost;
-import Pacman.Space.Entities.PacStates.*;
-import Pacman.Space.GameSpace;
-import Pacman.Space.GridElements.Gate;
-import Pacman.Space.GridElements.GridElement;
-import Pacman.Space.GridElements.Gums.*;
-import Pacman.Space.GridElements.Wall;
+import Pacman.GameSpace.Entities.Ghost;
+import Pacman.GameSpace.Entities.States.PacStates.*;
+import Pacman.GameSpace.GameSpace;
+import Pacman.GameSpace.GridElements.Gate;
+import Pacman.GameSpace.GridElements.GridElement;
+import Pacman.GameSpace.GridElements.Gums.*;
+import Pacman.GameSpace.GridElements.Wall;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +16,7 @@ import java.awt.geom.Ellipse2D;
 
 public class GameView extends JPanel implements SpaceObserver{
 
-    // Constantes
+    /// --- Constantes --- ///
     public final static int SCALE = 2;
     public final static int HUD_HEIGHT = GameSpace.TILE_SIZE; // px
     public final static Dimension HUD_LABEL_DIMENSION = new Dimension(GameSpace.TILE_SIZE * 5 * SCALE, HUD_HEIGHT * 3/5 * SCALE);
@@ -37,7 +37,7 @@ public class GameView extends JPanel implements SpaceObserver{
     private final static Color COLOR_GUM_SUPER = Color.ORANGE;
     private final static Color COLOR_GUM_MAZE = Color.GREEN;
 
-    // Attributs
+    /// --- Attributs --- ///
     private final GameSpace space;
     private final ScoreLabel scoreLabel;
     private final LivesLabel livesLabel;
@@ -48,9 +48,9 @@ public class GameView extends JPanel implements SpaceObserver{
     private Area ghostMainShape;
     private Area ghostFaceShape;
 
-    // GetSet
+    /// --- GetSet --- ///
 
-    // Constructeurs
+    /// --- Constructeurs --- ///
     public GameView(GameSpace gameSpace) {
 
         super();
@@ -87,7 +87,7 @@ public class GameView extends JPanel implements SpaceObserver{
 
     }
 
-    // Méthodes
+    /// --- Méthodes --- ///
     @Override
     public void paintComponent(Graphics g) {
 
@@ -234,16 +234,20 @@ public class GameView extends JPanel implements SpaceObserver{
 
     }
     @Override
+    public void onGameStarted() {
+        // Todo
+    }
+    @Override
     public void onPacStateChanged(PacState state) {
-        if(state instanceof RegularState || state instanceof StartState) {
+        if(state instanceof PacState_Regular || state instanceof PacState_Waiting) {
             currentPacmanColor = COLOR_PACMAN_NORMAL;
             currentGhostColor = COLOR_GHOST_NORMAL;
         }
-        else if(state instanceof SneakyState) {
+        else if(state instanceof PacState_Sneaky) {
             currentPacmanColor = COLOR_PACMAN_SNEAKY;
             currentGhostColor = COLOR_GHOST_NORMAL;
         }
-        else if(state instanceof SuperState) {
+        else if(state instanceof PacState_Super) {
             currentPacmanColor = COLOR_PACMAN_SUPER;
             currentGhostColor = COLOR_GHOST_WEAK;
         }
@@ -257,7 +261,7 @@ public class GameView extends JPanel implements SpaceObserver{
        scoreLabel.setScore(newScore);
     }
 
-    // Méthodes de générations des formes, appelées dans le constructeur
+    /// --- Méthodes --- /// de générations des formes, appelées dans le constructeur
     private void generatePacmanShapes(){
 
         // Body

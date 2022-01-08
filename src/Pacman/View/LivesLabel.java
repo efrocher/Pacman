@@ -1,18 +1,16 @@
 package Pacman.View;
 
-import Pacman.Space.GameSpace;
-
 import javax.swing.*;
 import java.awt.*;
 
 public class LivesLabel extends JLabel {
 
-    // Attributs
+    /// --- Attributs --- ///
     private static final String BASE_TEXT = "LIVES : ";
 
-    // GetSet
+    /// --- GetSet --- ///
 
-    // Constructeurs
+    /// --- Constructeurs --- ///
     public LivesLabel(Color color) {
 
         super();
@@ -23,7 +21,7 @@ public class LivesLabel extends JLabel {
 
     }
 
-    // Méthodes
+    /// --- Méthodes --- ///
     public void setLives(int newLives){
         setText(BASE_TEXT + newLives);
     }
